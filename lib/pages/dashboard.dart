@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/pages/add-inventory.dart';
+import 'package:hmrodokan/pages/category.dart';
+import 'package:hmrodokan/pages/counter.dart';
+import 'package:hmrodokan/pages/inventory.dart';
+
+import '../components/dashboard_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -8,7 +14,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  int _currentIndex = 0;
+  int _currentIndex = 1;
 
   void handleTap(int index) {
     // change the _currentIndex
@@ -17,12 +23,26 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  // list of pages to navigate
+  final List<Widget> _widgets = <Widget>[
+    const DashboardScreen(),
+    const Counter(),
+    const AddInventory(),
+    const Inventory(),
+    const Category()
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: const Text(
+          'Dashboard',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.green,
       ),
+      body: _widgets[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -37,7 +57,7 @@ class _DashboardState extends State<Dashboard> {
               icon: Icon(Icons.category), label: 'Category'),
         ],
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.blueAccent,
+        selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: handleTap,
       ),
