@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'pages/dashboard.dart';
+import 'package:hmrodokan/pages/counter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +18,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Dashboard(),
+      // home: const MyForm(),
+      home: const Counter(),
+      // routes: {
+      //   //'AddItem': (context) => AddItemPage(),
+      //   'AddItem2': (context) => MyForm(),
+      // },
     );
   }
 }
