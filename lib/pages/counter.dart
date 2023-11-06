@@ -1,6 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
+import 'package:qrscan/qrscan.dart' as scanner;
 
 class Counter extends StatefulWidget {
   const Counter({super.key});
@@ -129,21 +128,38 @@ class _CounterState extends State<Counter> {
 
 // icon: Icon(Icons.category), label: 'Category'),
       bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.inventory), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.qr_code_scanner), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: '')
-        ],
-        onTap: (int index) {
-          // showDialog(context: context, builder: builder)
-        },
-      ),
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.inventory), label: ''),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.qr_code_scanner),
+              label: '',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.history), label: '')
+          ],
+          onTap: (int index) {
+            if (index == 1) {
+              scanQRCode();
+            }
+          }),
     );
   }
+
+  void scanQRCode() async {
+    try {
+      String? result = await scanner.scan(); // Use String? instead of String
+      if (result != null) {
+        // Handle the scanned QR code result here when it's not null.
+        print("Scanned QR code result: $result");
+      } else {
+        // Handle the case when the result is null, if needed.
+        print("No QR code was scanned.");
+      }
+    } catch (e) {
+      // Handle errors, if any.
+      print("Error while scanning QR code: $e");
+    }
+  }
 }
-
-
-
 
 // AlertDialog(
 //                {
