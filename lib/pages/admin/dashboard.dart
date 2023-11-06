@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hmrodokan/pages/add-inventory.dart';
-import 'package:hmrodokan/pages/category.dart';
-import 'package:hmrodokan/pages/counter.dart';
-import 'package:hmrodokan/pages/inventory.dart';
+import 'package:hmrodokan/pages/admin/add-inventory.dart';
+import 'package:hmrodokan/pages/admin/category.dart';
+import 'package:hmrodokan/pages/admin/counter.dart';
+import 'package:hmrodokan/pages/admin/inventory.dart';
 
-import '../components/dashboard_screen.dart';
+import '../../components/dashboard_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});

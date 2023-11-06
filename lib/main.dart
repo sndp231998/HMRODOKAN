@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'pages/dashboard.dart';
+import 'package:hmrodokan/pages/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,12 +13,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Hmrodkan',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Dashboard(),
+      home: const HomeScreen(),
+      // setup routes here
     );
   }
 }
