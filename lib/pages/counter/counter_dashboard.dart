@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class CounterDashboard extends StatefulWidget {
   const CounterDashboard({super.key});
@@ -8,6 +10,8 @@ class CounterDashboard extends StatefulWidget {
 }
 
 class _CounterDashboardState extends State<CounterDashboard> {
+  String _barqrRes = '';
+
   List products = [
     {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
     {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
@@ -26,6 +30,23 @@ class _CounterDashboardState extends State<CounterDashboard> {
     {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
     {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
   ];
+
+  Future<void> scanBarQrCodeNormal(ScanMode scanmode) async {
+    String barcodeScanRes;
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, scanmode);
+
+      debugPrint(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version';
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _barqrRes = barcodeScanRes;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,13 +141,14 @@ class _CounterDashboardState extends State<CounterDashboard> {
               ),
               // AddInventory
             ],
-          )
+          ),
+          Text(_barqrRes),
         ],
       ),
 
 // icon: Icon(Icons.category), label: 'Category'),
       bottomNavigationBar: BottomNavigationBar(
-          items: [
+          items: const [
             BottomNavigationBarItem(icon: Icon(Icons.inventory), label: ''),
             BottomNavigationBarItem(
               icon: Icon(Icons.qr_code_scanner),
@@ -134,28 +156,35 @@ class _CounterDashboardState extends State<CounterDashboard> {
             ),
             BottomNavigationBarItem(icon: Icon(Icons.history), label: '')
           ],
-          onTap: (int index) {
+          onTap: (int index) async {
             if (index == 1) {
-              scanQRCode();
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return SizedBox(
+                      height: 150,
+                      child: Column(
+                        children: [
+                          ListTile(
+                            onTap: () {
+                              scanBarQrCodeNormal(ScanMode.QR);
+                            },
+                            leading: const Icon(Icons.qr_code),
+                            title: const Text('Scan QR Code'),
+                          ),
+                          ListTile(
+                            onTap: () {
+                              scanBarQrCodeNormal(ScanMode.BARCODE);
+                            },
+                            leading: const Icon(Icons.barcode_reader),
+                            title: const Text('Scan Barcode'),
+                          )
+                        ],
+                      ),
+                    );
+                  });
             }
           }),
     );
-  }
-
-  void scanQRCode() async {
-    try {
-      // String? result = await scanner.scan(); // Use String? instead of String
-      String? result = '';
-      if (result != null) {
-        // Handle the scanned QR code result here when it's not null.
-        print("Scanned QR code result: $result");
-      } else {
-        // Handle the case when the result is null, if needed.
-        print("No QR code was scanned.");
-      }
-    } catch (e) {
-      // Handle errors, if any.
-      print("Error while scanning QR code: $e");
-    }
   }
 }
