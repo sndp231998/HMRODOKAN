@@ -6,15 +6,15 @@ import 'package:hmrodokan/pages/admin/inventory.dart';
 
 import '../../components/dashboard_screen.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+class AdminDashboard extends StatefulWidget {
+  const AdminDashboard({super.key});
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<AdminDashboard> createState() => _AdminDashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
-  int _currentIndex = 1;
+class _AdminDashboardState extends State<AdminDashboard> {
+  int _currentIndex = 0;
 
   void handleTap(int index) {
     // change the _currentIndex
@@ -24,25 +24,25 @@ class _DashboardState extends State<Dashboard> {
   }
 
   // list of pages to navigate
-  final List<Widget> _widgets = <Widget>[
-    const DashboardScreen(),
-    const Counter(),
-    const AddInventory(),
-    const Inventory(),
-    const Category()
+  final List _widgets = [
+    {'widget': const DashboardScreen(), 'title': "Dashboard"},
+    {'widget': const Counter(), 'title': "Counter"},
+    {'widget': const AddItemPage(), 'title': "Add Item"},
+    {'widget': InventoryPage(), 'title': "Inventory"},
+    {'widget': const Category(), 'title': "Category"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          '${_widgets[_currentIndex]["title"]}',
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.green,
       ),
-      body: _widgets[_currentIndex],
+      body: _widgets[_currentIndex]["widget"],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

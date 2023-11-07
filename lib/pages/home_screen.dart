@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../login.dart';
+import 'login.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,63 +10,71 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 70),
-            child: Text(
-              'Hmrodkan',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-            ),
+          const SizedBox(
+            height: 100,
           ),
+          const Expanded(
+              child: Center(
+            child: Text(
+              'Choose user type',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+          )),
           Expanded(
-            child: Center(
-              child: SizedBox(
-                height: 300,
-                child: IntrinsicWidth(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStatePropertyAll(Colors.blue[300]),
-                            foregroundColor:
-                                const MaterialStatePropertyAll(Colors.white),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Login(
-                                          userType: 'admin',
-                                        )));
-                          },
-                          child: const Text(
-                            "Admin Portal",
-                            style: TextStyle(fontSize: 17),
-                          )),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStatePropertyAll(Colors.green[300]),
-                            foregroundColor:
-                                const MaterialStatePropertyAll(Colors.white),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Login(
-                                          userType: 'counter',
-                                        )));
-                          },
-                          child: const Text(
-                            "Counter Portal",
-                            style: TextStyle(fontSize: 17),
-                          )),
-                    ],
+            flex: 2,
+            child: SizedBox(
+              width: 200,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Login(
+                                    userType: 'admin',
+                                  )));
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/images/admin.png',
+                          height: 50,
+                          width: 50,
+                        ),
+                        const Text(
+                          'Admin Login',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        )
+                      ],
+                    ),
                   ),
-                ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Login(
+                                    userType: 'counter',
+                                  )));
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/images/counter.png',
+                          height: 50,
+                          width: 50,
+                        ),
+                        const Text(
+                          'Counter Login',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
