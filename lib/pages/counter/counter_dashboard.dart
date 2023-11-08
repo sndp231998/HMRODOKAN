@@ -71,7 +71,7 @@ class _CounterDashboardState extends State<CounterDashboard> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "Action",
+                      "",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ]),
@@ -101,26 +101,33 @@ class _CounterDashboardState extends State<CounterDashboard> {
               ),
             ),
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       "Total: Rs 400000",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     ElevatedButton(
                         onPressed: null,
-                        style: ButtonStyle(
+                        style: const ButtonStyle(
                           foregroundColor:
                               MaterialStatePropertyAll<Color>(Colors.white),
                           backgroundColor:
                               MaterialStatePropertyAll<Color>(Colors.green),
                         ),
-                        child: Text("Invoice"))
+                        child: TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('invoice');
+                            },
+                            child: const Text(
+                              'Generate Invoice',
+                              style: TextStyle(color: Colors.white),
+                            )))
                   ],
                 ),
               ),

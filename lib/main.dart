@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/pages/counter/invoice.dart';
 import 'package:hmrodokan/pages/home_screen.dart';
 
 void main() {
@@ -24,6 +25,9 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: const HomeScreen(),
+      routes: {
+        'invoice': (context) => const Invoice(),
+      },
       // setup routes here
     );
   }
