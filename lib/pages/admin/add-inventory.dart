@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:hmrodokan/components/bar_qr_scanner.dart';
 
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
@@ -10,6 +12,8 @@ class AddItemPage extends StatefulWidget {
 class _AddItemPageState extends State<AddItemPage> {
   final _formKey = GlobalKey<FormState>();
 
+  String _barqrRes = '';
+
   final _productNameController = TextEditingController();
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
@@ -18,14 +22,6 @@ class _AddItemPageState extends State<AddItemPage> {
   final _taxController = TextEditingController();
   final _barcodeController = TextEditingController();
   final _categoryController = TextEditingController();
-
-  void scanBarcode() async {
-    // String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-    // "#ff6666", "Cancel", true, ScanMode.BARCODE);
-    setState(() {
-      // _barcodeController.text = barcodeScanRes;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +115,41 @@ class _AddItemPageState extends State<AddItemPage> {
               ),
               IconButton(
                 icon: Icon(Icons.qr_code_scanner),
-                onPressed: scanBarcode,
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return SizedBox(
+                          height: 150,
+                          child: Column(
+                            children: [
+                              ListTile(
+                                onTap: () {
+                                  setState(() async {
+                                    _barqrRes =
+                                        await BarQRScan.scanBarQrCodeNormal(
+                                            ScanMode.QR);
+                                  });
+                                },
+                                leading: const Icon(Icons.qr_code),
+                                title: const Text('Scan QR Code'),
+                              ),
+                              ListTile(
+                                onTap: () {
+                                  setState(() async {
+                                    _barqrRes =
+                                        await BarQRScan.scanBarQrCodeNormal(
+                                            ScanMode.BARCODE);
+                                  });
+                                },
+                                leading: const Icon(Icons.barcode_reader),
+                                title: const Text('Scan Barcode'),
+                              )
+                            ],
+                          ),
+                        );
+                      });
+                },
               ),
               TextFormField(
                 controller: _categoryController,
