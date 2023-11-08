@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/pages/admin/admin_dashboard.dart';
 import 'package:hmrodokan/pages/counter/counter_dashboard.dart';
+import 'package:hmrodokan/pages/forgetpassword.dart';
 
 class Login extends StatefulWidget {
   final String userType; // route to different paths as admin & user
@@ -32,61 +33,10 @@ class _LoginState extends State<Login> {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const CounterDashboard()));
     }
-/*
-    if (username == '' || password == '') {
-      _showErrorDialog('Some fields are empty');
-    }
-
-    if (userType == 'admin' && username != '' && password != '') {
-      _showGreeting("Admin");
-    }
-    if (userType == 'counter' && username != '' && password != '') {
-      _showGreeting("Counter");
-    }
-
-    _showErrorDialog('Username or Password is incorrect');
-    */
+    // ... (rest of your logic)
   }
 
-  void _showGreeting(String userType) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Hello $userType"),
-          content: const Text("Please fill out the form below."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Login Error"),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // ... (rest of your code)
 
   @override
   Widget build(BuildContext context) {
@@ -128,11 +78,39 @@ class _LoginState extends State<Login> {
                 ),
               ),
             ),
+            // Add a row for "Forgot Password?" link and checkbox
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Checkbox(
+                      value: false, // Set the initial value accordingly
+                      onChanged: (value) {
+                        // Handle checkbox state change here
+                      },
+                    ),
+                    Text("Remember me"),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ForgotPassword()));
+                  },
+                  child: const Text('Forgot Password?'),
+                ),
+              ],
+            ),
+
             ElevatedButton(
               onPressed: () => _login(widget.userType),
               style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.black12),
-                  foregroundColor: MaterialStatePropertyAll(Colors.white)),
+                backgroundColor: MaterialStatePropertyAll(Colors.black12),
+                foregroundColor: MaterialStatePropertyAll(Colors.white),
+              ),
               child: const Text('Login'),
             ),
           ],
@@ -141,5 +119,3 @@ class _LoginState extends State<Login> {
     );
   }
 }
-
-// From here admin will log in to admin dashboard and similarlly counter to counter dashboard
