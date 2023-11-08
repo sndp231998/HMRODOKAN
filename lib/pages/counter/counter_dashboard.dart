@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:hmrodokan/components/bar_qr_scanner.dart';
 
 class CounterDashboard extends StatefulWidget {
   const CounterDashboard({super.key});
@@ -14,39 +14,22 @@ class _CounterDashboardState extends State<CounterDashboard> {
 
   List products = [
     {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 2, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 3, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 4, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 5, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 6, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 7, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 8, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 9, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 10, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 11, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 12, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 13, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 14, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 15, "name": 'masu', "price": 12, "qty": 12, "total": 12},
+    {"id": 16, "name": 'masu', "price": 12, "qty": 12, "total": 12},
   ];
-
-  Future<void> scanBarQrCodeNormal(ScanMode scanmode) async {
-    String barcodeScanRes;
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, scanmode);
-
-      debugPrint(barcodeScanRes);
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version';
-    }
-
-    if (!mounted) return;
-    setState(() {
-      _barqrRes = barcodeScanRes;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +84,12 @@ class _CounterDashboardState extends State<CounterDashboard> {
                       Text('${products[i]["total"]}'),
                       GestureDetector(
                         onTap: () {
-                          products = products
-                              .where((element) =>
-                                  element["id"] != products[i]["id"])
-                              .toList();
+                          setState(() {
+                            products = products
+                                .where((element) =>
+                                    element["id"] != products[i]["id"])
+                                .toList();
+                          });
                         },
                         child: const Icon(
                           Icons.delete,
@@ -167,14 +152,20 @@ class _CounterDashboardState extends State<CounterDashboard> {
                         children: [
                           ListTile(
                             onTap: () {
-                              scanBarQrCodeNormal(ScanMode.QR);
+                              setState(() async {
+                                _barqrRes = await BarQRScan.scanBarQrCodeNormal(
+                                    ScanMode.QR);
+                              });
                             },
                             leading: const Icon(Icons.qr_code),
                             title: const Text('Scan QR Code'),
                           ),
                           ListTile(
                             onTap: () {
-                              scanBarQrCodeNormal(ScanMode.BARCODE);
+                              setState(() async {
+                                _barqrRes = await BarQRScan.scanBarQrCodeNormal(
+                                    ScanMode.BARCODE);
+                              });
                             },
                             leading: const Icon(Icons.barcode_reader),
                             title: const Text('Scan Barcode'),
