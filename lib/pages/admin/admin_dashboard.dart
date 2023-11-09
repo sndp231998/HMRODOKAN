@@ -4,7 +4,7 @@ import 'package:hmrodokan/pages/admin/category.dart';
 import 'package:hmrodokan/pages/admin/counter.dart';
 import 'package:hmrodokan/pages/admin/inventory.dart';
 
-import '../../components/dashboard_screen.dart';
+import 'dashboard_screen.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
