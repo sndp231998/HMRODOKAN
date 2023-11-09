@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/pages/admin/add-inventory.dart';
 import 'package:hmrodokan/pages/admin/category.dart';
-import 'package:hmrodokan/pages/admin/counter.dart';
+import 'package:hmrodokan/pages/admin/user.dart';
 import 'package:hmrodokan/pages/admin/inventory.dart';
 
 import 'dashboard_screen.dart';
@@ -26,7 +26,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   // list of pages to navigate
   final List _widgets = [
     {'widget': const DashboardScreen(), 'title': "Dashboard"},
-    {'widget': const Counter(), 'title': "Counter"},
+    {'widget': const User(), 'title': "User"},
     {'widget': const AddItemPage(), 'title': "Add Item"},
     {'widget': InventoryPage(), 'title': "Inventory"},
     {'widget': const Category(), 'title': "Category"},
