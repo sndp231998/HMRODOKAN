@@ -182,6 +182,10 @@ class _CounterDashboardState extends State<CounterDashboard> {
                     );
                   });
             }
+
+            if (index == 2) {
+              Navigator.of(context).pushNamed('history');
+            }
           }),
     );
   }

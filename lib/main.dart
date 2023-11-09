@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/pages/counter/history.dart';
 import 'package:hmrodokan/pages/counter/invoice.dart';
 import 'package:hmrodokan/pages/home_screen.dart';
 
@@ -27,6 +28,7 @@ class _MyAppState extends State<MyApp> {
       home: const HomeScreen(),
       routes: {
         'invoice': (context) => const Invoice(),
+        'history': (context) => const History(),
       },
       // setup routes here
     );
