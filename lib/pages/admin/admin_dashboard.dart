@@ -28,7 +28,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     {'widget': const DashboardScreen(), 'title': "Dashboard"},
     {'widget': const User(), 'title': "User"},
     {'widget': const AddItemPage(), 'title': "Add Item"},
-    {'widget': InventoryPage(), 'title': "Inventory"},
+    {'widget': const InventoryPage(), 'title': "Inventory"},
     {'widget': const Category(), 'title': "Category"},
   ];
 
@@ -60,6 +60,28 @@ class _AdminDashboardState extends State<AdminDashboard> {
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: handleTap,
+      ),
+      floatingActionButton: PopupMenuButton(
+        itemBuilder: (context) {
+          return [
+            const PopupMenuItem(
+              value: 'admin-users',
+              child: ListTile(
+                leading: Icon(Icons.people),
+                title: Text('Add Users'),
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'admin-inventory',
+              child: ListTile(
+                leading: Icon(Icons.add_box),
+                title: Text('Add Inventory'),
+              ),
+            )
+          ];
+        },
+        onSelected: (value) {},
+        child: const Icon(Icons.add_circle),
       ),
     );
   }

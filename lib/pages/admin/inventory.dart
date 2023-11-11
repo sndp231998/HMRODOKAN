@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class InventoryPage extends StatefulWidget {
+  const InventoryPage({super.key});
+
   @override
   _InventoryPageState createState() => _InventoryPageState();
 }
@@ -31,7 +33,7 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.blue, Colors.teal],
           begin: Alignment.topCenter,
@@ -43,7 +45,7 @@ class _InventoryPageState extends State<InventoryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Inventory',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
@@ -52,25 +54,25 @@ class _InventoryPageState extends State<InventoryPage> {
               children: [
                 Flexible(
                   child: TextField(
-                    decoration: InputDecoration(labelText: 'Search Item'),
+                    decoration: const InputDecoration(labelText: 'Search Item'),
                     onChanged: (value) {
                       updateFilteredItems(value);
                     },
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 ElevatedButton(
                   onPressed: () {
                     // Implement category functionality
                   },
-                  child: Text('Category'),
+                  child: const Text('Category'),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: DataTable(
-                columns: [
+                columns: const [
                   DataColumn(label: Text('Item Name')),
                   DataColumn(label: Text('Price')),
                   DataColumn(label: Text('Code')),
@@ -91,7 +93,7 @@ class _InventoryPageState extends State<InventoryPage> {
                                 updateFilteredItems('');
                               });
                             },
-                            child: Text('Delete'),
+                            child: const Text('Delete'),
                           ),
                         ],
                       ),
@@ -112,36 +114,38 @@ class _InventoryPageState extends State<InventoryPage> {
                     TextEditingController codeController =
                         TextEditingController();
                     return AlertDialog(
-                      title: Text('Add New Item'),
+                      title: const Text('Add New Item'),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextField(
                             controller: nameController,
-                            decoration: InputDecoration(labelText: 'Item Name'),
+                            decoration:
+                                const InputDecoration(labelText: 'Item Name'),
                           ),
                           TextField(
                             controller: priceController,
                             decoration:
-                                InputDecoration(labelText: 'Item Price'),
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
+                                const InputDecoration(labelText: 'Item Price'),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
                           ),
                           TextField(
                             controller: codeController,
-                            decoration: InputDecoration(labelText: 'Item Code'),
+                            decoration:
+                                const InputDecoration(labelText: 'Item Code'),
                           ),
                         ],
                       ),
                       actions: <Widget>[
                         TextButton(
-                          child: Text('Cancel'),
+                          child: const Text('Cancel'),
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
                         ),
                         TextButton(
-                          child: Text('Add'),
+                          child: const Text('Add'),
                           onPressed: () {
                             String name = nameController.text;
                             double price =
@@ -161,7 +165,7 @@ class _InventoryPageState extends State<InventoryPage> {
                   },
                 );
               },
-              child: Text('Add Item'),
+              child: const Text('Add Item'),
             ),
           ],
         ),

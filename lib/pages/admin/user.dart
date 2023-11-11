@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/components/table_body.dart';
+import 'package:hmrodokan/components/table_head.dart';
 
 class User extends StatefulWidget {
   const User({super.key});
@@ -8,90 +10,74 @@ class User extends StatefulWidget {
 }
 
 class _UserState extends State<User> {
-  String dropDownValue = 'counter';
-
-  final List _userRole = ['counter', 'admin'];
-
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-        child: Column(
-          children: [
-            const TextField(
-              keyboardType: TextInputType.name,
-              decoration: InputDecoration(labelText: 'Enter Fullname'),
-            ),
-            const TextField(
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(labelText: 'Enter Email'),
-            ),
-            const TextField(
-              keyboardType: TextInputType.streetAddress,
-              decoration: InputDecoration(labelText: 'Enter Address'),
-            ),
-            const TextField(
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                labelText: 'Enter Contact Number',
-              ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                const Text(
-                  'Select User Role:',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.normal),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          // search box
+
+          // listing of users
+          Table(
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              const TableRow(children: [
+                TableHead(tableData: 'ID'),
+                TableHead(tableData: 'Fullname'),
+                TableHead(tableData: 'Email'),
+                TableHead(tableData: 'Address'),
+                TableHead(tableData: ''),
+              ]),
+              TableRow(children: [
+                const TableBody(tableData: '123'),
+                const TableBody(tableData: 'alex'),
+                const TableBody(tableData: 'alex@a.xom'),
+                const TableBody(tableData: 'alex address'),
+                TableCell(
+                  child: PopupMenuButton(onSelected: (value) {
+                    if (value == 'more') {}
+                    if (value == 'edit') {}
+                    if (value == 'delete') {}
+                  }, itemBuilder: ((context) {
+                    return [
+                      const PopupMenuItem(
+                          value: 'more',
+                          textStyle: TextStyle(fontSize: 10),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.details,
+                              size: 20,
+                            ),
+                            title: Text('More'),
+                          )),
+                      const PopupMenuItem(
+                          value: 'edit',
+                          textStyle: TextStyle(fontSize: 10),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.edit,
+                              size: 20,
+                            ),
+                            title: Text('Edit'),
+                          )),
+                      const PopupMenuItem(
+                          value: 'delete',
+                          textStyle: TextStyle(fontSize: 10),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.delete,
+                              size: 20,
+                            ),
+                            title: Text('Delete'),
+                          )),
+                    ];
+                  })),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
-                DropdownButton(
-                    value: dropDownValue,
-                    items: _userRole.map((value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        dropDownValue = value!;
-                      });
-                    }),
-              ],
-            ),
-            const TextField(
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Set Login ID',
-              ),
-            ),
-            const TextField(
-              obscureText: true,
-              keyboardType: TextInputType.visiblePassword,
-              decoration: InputDecoration(
-                labelText: 'Set Password',
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.green),
-                  foregroundColor: MaterialStatePropertyAll(Colors.white)),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: Text('Create New User'),
-              ),
-            )
-          ],
-        ),
+              ])
+            ],
+          )
+        ],
       ),
     );
   }
