@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:hmrodokan/components/bar_qr_scanner.dart';
+import 'package:hmrodokan/pages/counter/create_bill.dart';
+import 'package:hmrodokan/pages/counter/history.dart';
+import 'package:hmrodokan/pages/counter/inventory.dart';
 
 class CounterDashboard extends StatefulWidget {
   const CounterDashboard({super.key});
@@ -10,183 +11,103 @@ class CounterDashboard extends StatefulWidget {
 }
 
 class _CounterDashboardState extends State<CounterDashboard> {
-  String _barqrRes = '';
-
-  List products = [
-    {"id": 1, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 2, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 3, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 4, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 5, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 6, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 7, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 8, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 9, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 10, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 11, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 12, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 13, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 14, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 15, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-    {"id": 16, "name": 'masu', "price": 12, "qty": 12, "total": 12},
-  ];
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
-          title: const Text(
-            "Hamro Dokan",
-          )),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 350,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Table(children: [
-                  const TableRow(children: [
-                    Text(
-                      "ID",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            children: [
+              Container(
+                height: 130,
+                decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Colors.blueGrey,
+                        Colors.green,
+                      ],
                     ),
-                    Text(
-                      "Name",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "Price",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "Qty",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "Total",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ]),
-                  for (int i = 0; i < products.length; i++)
-                    TableRow(children: [
-                      Text('${products[i]["id"]}'),
-                      Text('${products[i]["name"]}'),
-                      Text('${products[i]["price"]}'),
-                      Text('${products[i]["qty"]}'),
-                      Text('${products[i]["total"]}'),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.black26,
+                      width: 1.0,
+                    )),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       GestureDetector(
                         onTap: () {
-                          setState(() {
-                            products = products
-                                .where((element) =>
-                                    element["id"] != products[i]["id"])
-                                .toList();
-                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const CreateBill()),
+                          );
                         },
-                        child: const Icon(
-                          Icons.delete,
-                          color: Colors.red,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'New Bill',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                            ),
+                          ],
                         ),
-                      )
-                    ]),
-                ]),
-              ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    const Text(
-                      "Total: Rs 400000",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    ElevatedButton(
-                        onPressed: null,
-                        style: const ButtonStyle(
-                          foregroundColor:
-                              MaterialStatePropertyAll<Color>(Colors.white),
-                          backgroundColor:
-                              MaterialStatePropertyAll<Color>(Colors.green),
-                        ),
-                        child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('invoice');
-                            },
-                            child: const Text(
-                              'Generate Invoice',
-                              style: TextStyle(color: Colors.white),
-                            )))
-                  ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Icon(
+                        Icons.shop,
+                        size: 50,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // AddInventory
+              )
             ],
           ),
-          Text(_barqrRes),
-        ],
+        ),
       ),
-
-// icon: Icon(Icons.category), label: 'Category'),
       bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Colors.green,
+          unselectedItemColor: Colors.black26,
+          currentIndex: 0,
+          onTap: (value) {
+            setState(() {
+              _currentIndex = value;
+              if (_currentIndex == 1) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Inventory()));
+              }
+              if (_currentIndex == 2) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const History()));
+              }
+            });
+          },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.inventory), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.qr_code_scanner),
-              label: '',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: '')
-          ],
-          onTap: (int index) async {
-            if (index == 1) {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return SizedBox(
-                      height: 150,
-                      child: Column(
-                        children: [
-                          ListTile(
-                            onTap: () {
-                              setState(() async {
-                                _barqrRes = await BarQRScan.scanBarQrCodeNormal(
-                                    ScanMode.QR);
-                              });
-                            },
-                            leading: const Icon(Icons.qr_code),
-                            title: const Text('Scan QR Code'),
-                          ),
-                          ListTile(
-                            onTap: () {
-                              setState(() async {
-                                _barqrRes = await BarQRScan.scanBarQrCodeNormal(
-                                    ScanMode.BARCODE);
-                              });
-                            },
-                            leading: const Icon(Icons.barcode_reader),
-                            title: const Text('Scan Barcode'),
-                          )
-                        ],
-                      ),
-                    );
-                  });
-            }
-
-            if (index == 2) {
-              Navigator.of(context).pushNamed('history');
-            }
-          }),
+                icon: Icon(Icons.inventory), label: 'Inventory'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.history), label: 'History'),
+          ]),
     );
   }
 }

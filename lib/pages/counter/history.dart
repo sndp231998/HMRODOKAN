@@ -11,19 +11,68 @@ class History extends StatelessWidget {
         foregroundColor: Colors.white,
         title: const Text('History'),
       ),
-      body: Column(
-        children: [
-          ListTile(
-            onTap: () {
-              Navigator.of(context).pushNamed('invoice');
-            },
-            shape: const Border(
-              bottom: BorderSide(color: Colors.black12, width: 1.0),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Table(
+          defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
+          children: const [
+            TableRow(
+              decoration: BoxDecoration(
+                color: Colors.black26,
+              ),
+              children: [
+                TableCell(
+                    child: Text(
+                  'Sales ID',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                )),
+                TableCell(
+                    child: Text(
+                  'Date',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                )),
+                TableCell(
+                    child: Text(
+                  'Payment',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                )),
+                TableCell(
+                    child: Text(
+                  'Total',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                )),
+              ],
             ),
-            leading: const Icon(Icons.note_sharp),
-            title: const Text('Sales ID: 10234'),
-          ),
-        ],
+            TableRow(
+              children: [
+                TableCell(child: Text('1234')),
+                TableCell(child: Text('2034/00/12')),
+                TableCell(child: Text('Cash')),
+                TableCell(child: Text('Rs. 2031.08')),
+              ],
+            ),
+            TableRow(
+              children: [
+                TableCell(child: Text('1234')),
+                TableCell(child: Text('2034/00/12')),
+                TableCell(child: Text('Cash')),
+                TableCell(child: Text('Rs. 2031.08')),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
