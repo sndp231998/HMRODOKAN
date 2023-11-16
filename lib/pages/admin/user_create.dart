@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/components/back_home.dart';
 
 class UserCreate extends StatefulWidget {
   const UserCreate({super.key});
@@ -15,7 +16,10 @@ class _UserCreateState extends State<UserCreate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      appBar: AppBar(
+        title: const Text('Add new User'),
+      ),
+      body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
           child: Column(
@@ -91,7 +95,11 @@ class _UserCreateState extends State<UserCreate> {
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text('Create New User'),
                 ),
-              )
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const IntrinsicWidth(child: BackHome()),
             ],
           ),
         ),

@@ -17,15 +17,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
         color: Colors.white,
       ),
       'title': 'Sales',
-      'amount': '110',
+      'amount': 'Rs. 22110',
+    },
+    {
+      'icon': const Icon(
+        Icons.inventory,
+        size: 50,
+        color: Colors.white,
+      ),
+      'title': 'Products Sold',
+      'amount': '55',
+    },
+    {
+      'icon': const Icon(
+        Icons.category,
+        size: 50,
+        color: Colors.white,
+      ),
+      'title': 'Out of Stock',
+      'amount': '5',
+    },
+    {
+      'icon': const Icon(
+        Icons.countertops,
+        size: 50,
+        color: Colors.white,
+      ),
+      'title': 'Counters',
+      'amount': '3',
     }
   ];
 
   @override
   Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisCount: 3,
-      children: List.generate(1, (index) {
+      crossAxisCount: 2,
+      children: List.generate(_analytics.length, (index) {
         return DashboardCard(
           icon: _analytics[index]['icon'],
           title: _analytics[index]['title'],
@@ -35,3 +62,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
+
+// add graph too and other stuffs

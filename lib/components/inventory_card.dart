@@ -20,7 +20,7 @@ class InventoryCard extends StatelessWidget {
           // image
           Center(
             child: Image.asset(
-              'assets/images/admin.png',
+              'assets/images/samayang.jpeg',
               height: 50,
               width: 30,
             ),

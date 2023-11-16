@@ -26,14 +26,23 @@ class _UserState extends State<User> {
                 TableHead(tableData: 'ID'),
                 TableHead(tableData: 'Fullname'),
                 TableHead(tableData: 'Email'),
+                TableHead(tableData: 'Role'),
                 TableHead(tableData: 'Address'),
                 TableHead(tableData: ''),
               ]),
               TableRow(children: [
-                const TableBody(tableData: '123'),
-                const TableBody(tableData: 'alex'),
-                const TableBody(tableData: 'alex@a.xom'),
-                const TableBody(tableData: 'alex address'),
+                const TableCell(child: Text('123')),
+                const TableCell(child: Text('alex')),
+                const TableCell(child: Text('alex@a.xom')),
+                const TableCell(
+                    child: Text(
+                  'Admin',
+                  style: TextStyle(
+                    backgroundColor: Colors.black38,
+                    color: Colors.white,
+                  ),
+                )),
+                const TableCell(child: Text('alex address')),
                 TableCell(
                   child: PopupMenuButton(onSelected: (value) {
                     if (value == 'more') {}

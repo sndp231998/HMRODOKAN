@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hmrodokan/pages/admin/add-inventory.dart';
+import 'package:hmrodokan/pages/admin/add_inventory.dart';
 import 'package:hmrodokan/pages/admin/category.dart';
+import 'package:hmrodokan/pages/admin/create_category.dart';
+import 'package:hmrodokan/pages/admin/sales.dart';
 import 'package:hmrodokan/pages/admin/user.dart';
 import 'package:hmrodokan/pages/admin/inventory.dart';
+import 'package:hmrodokan/pages/admin/user_create.dart';
 
 import 'dashboard_screen.dart';
 
@@ -27,18 +30,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final List _widgets = [
     {'widget': const DashboardScreen(), 'title': "Dashboard"},
     {'widget': const User(), 'title': "User"},
-    {'widget': const AddItemPage(), 'title': "Add Item"},
     {'widget': const InventoryPage(), 'title': "Inventory"},
     {'widget': const Category(), 'title': "Category"},
+    {'widget': const Sales(), 'title': "Sales"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         title: Text(
           '${_widgets[_currentIndex]["title"]}',
-          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.green,
       ),
@@ -46,15 +49,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Counter'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle),
-            label: '',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'User'),
           BottomNavigationBarItem(
               icon: Icon(Icons.inventory), label: 'Inventory'),
           BottomNavigationBarItem(
               icon: Icon(Icons.category), label: 'Category'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sell_sharp),
+            label: 'Sales',
+          ),
         ],
         currentIndex: _currentIndex,
         selectedItemColor: Colors.green,
@@ -77,10 +80,32 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 leading: Icon(Icons.add_box),
                 title: Text('Add Inventory'),
               ),
+            ),
+            const PopupMenuItem(
+              value: 'admin-category',
+              child: ListTile(
+                leading: Icon(Icons.category),
+                title: Text('Add Category'),
+              ),
             )
           ];
         },
-        onSelected: (value) {},
+        onSelected: (value) {
+          if (value == 'admin-users') {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const UserCreate()));
+          }
+          if (value == 'admin-inventory') {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const AddItemPage()));
+          }
+          if (value == 'admin-category') {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateCategory()));
+          }
+        },
         child: const Icon(Icons.add_circle),
       ),
     );

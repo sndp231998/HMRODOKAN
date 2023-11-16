@@ -13,15 +13,14 @@ class ProductsCard extends StatelessWidget {
         children: [
           // image
           Image.asset(
-            'assets/images/admin.png',
-            width: 30,
+            'assets/images/samayang.jpeg',
+            width: 50,
           ),
           // name & quantity
           Expanded(
             child: Container(
               // color: Colors.red,
               child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Name of the Product'),
                   Row(
