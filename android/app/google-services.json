@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "440085729678",
+    "project_id": "hamrodokan-12f2a",
+    "storage_bucket": "hamrodokan-12f2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440085729678:android:58c16ae16091fd350494df",
+        "android_client_info": {
+          "package_name": "com.example.hmrodokan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvQUzCo8urosJoLOq6DDqn9D3kZxyebEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
