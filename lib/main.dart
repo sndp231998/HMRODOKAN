@@ -1,12 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/firebase_options.dart';
 import 'package:hmrodokan/pages/counter/history.dart';
 import 'package:hmrodokan/pages/counter/invoice.dart';
 import 'package:hmrodokan/pages/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
