@@ -7,8 +7,8 @@ class Category extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8.0),
-      child: GridView.count(crossAxisCount: 3, children: [
+      padding: const EdgeInsets.all(8.0),
+      child: GridView.count(crossAxisCount: 3, children: const [
         CategoryCard(),
         CategoryCard(),
         CategoryCard(),

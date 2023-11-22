@@ -8,11 +8,11 @@ class CategoryCard extends StatelessWidget {
     return Container(
       width: 100,
       height: 100,
-      margin: EdgeInsets.all(5),
-      padding: EdgeInsets.all(5.0),
+      margin: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5.0),
       decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            const Color.fromARGB(255, 57, 211, 136),
+          gradient: const LinearGradient(colors: [
+            Color.fromARGB(255, 57, 211, 136),
             Colors.green,
           ]),
           borderRadius: BorderRadius.circular(4),
@@ -20,7 +20,7 @@ class CategoryCard extends StatelessWidget {
             color: Colors.black38,
             width: 1.0,
           )),
-      child: Column(
+      child: const Column(
         children: [
           // more button
           Row(
@@ -42,7 +42,7 @@ class CategoryCard extends StatelessWidget {
           // name of category
           Expanded(
               child: Center(
-                  child: const Text(
+                  child: Text(
             'Noodles',
             style: TextStyle(
               fontWeight: FontWeight.w500,

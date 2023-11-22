@@ -63,21 +63,21 @@ class _MyFormState extends State<MyForm> {
             backgroundColor: Colors.green,
             centerTitle: true),
         body: Container(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: ListView(
             children: [
               TextFormField(
                 onChanged: (val) {
                   _updateText(val);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Product Name',
                     prefixIcon: Icon(Icons.verified_user_outlined),
                     border: OutlineInputBorder()),
               ),
               //Text("Product Name is $_productname")
 
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
 
@@ -86,14 +86,14 @@ class _MyFormState extends State<MyForm> {
                 onChanged: (val) {
                   _updateText(val);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Quentity',
                     prefixIcon: Icon(Icons.verified_user_outlined),
                     border: OutlineInputBorder()),
               ),
               //Text("Product Name is $_productname")
 
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
 
@@ -102,14 +102,14 @@ class _MyFormState extends State<MyForm> {
                 onChanged: (val) {
                   _updateText(val);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Purchased Price',
                     prefixIcon: Icon(Icons.verified_user_outlined),
                     border: OutlineInputBorder()),
               ),
               //Text("Product Name is $_productname")
 
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
 
@@ -118,14 +118,14 @@ class _MyFormState extends State<MyForm> {
                 onChanged: (val) {
                   _updateText(val);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Selling Price',
                     prefixIcon: Icon(Icons.verified_user_outlined),
                     border: OutlineInputBorder()),
               ),
               //Text("Product Name is $_productname")
 
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
 
@@ -134,14 +134,14 @@ class _MyFormState extends State<MyForm> {
                 onChanged: (val) {
                   _updateText(val);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Tax(%)',
                     prefixIcon: Icon(Icons.verified_user_outlined),
                     border: OutlineInputBorder()),
               ),
               //Text("Product Name is $_productname")
 
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
 

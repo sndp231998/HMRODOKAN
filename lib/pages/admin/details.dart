@@ -7,7 +7,7 @@ class Details extends StatelessWidget {
   final double selling;
   final double purchased;
   final double tax;
-  Details({
+  const Details({
     Key? key,
     required this.productname,
     //required this.productprice,
@@ -21,20 +21,20 @@ class Details extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Details"),
+        title: const Text("Details"),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
         ),
       ),
       body: Container(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
             ListTile(
-              leading: Icon(Icons.account_balance_wallet_outlined),
+              leading: const Icon(Icons.account_balance_wallet_outlined),
               title: Text(productname),
             ),
             // ListTile(
@@ -42,19 +42,19 @@ class Details extends StatelessWidget {
             //   title: Text("Product Price: $productprice"),
             // ),
             ListTile(
-              leading: Icon(Icons.account_balance_wallet_outlined),
+              leading: const Icon(Icons.account_balance_wallet_outlined),
               title: Text("Quentity: $quentity"),
             ),
             ListTile(
-              leading: Icon(Icons.account_balance_wallet_outlined),
+              leading: const Icon(Icons.account_balance_wallet_outlined),
               title: Text("Selling : $selling"),
             ),
             ListTile(
-              leading: Icon(Icons.account_balance_wallet_outlined),
+              leading: const Icon(Icons.account_balance_wallet_outlined),
               title: Text("Purchased : $purchased"),
             ),
             ListTile(
-              leading: Icon(Icons.account_balance_wallet_outlined),
+              leading: const Icon(Icons.account_balance_wallet_outlined),
               title: Text("Tax : $tax"),
             ),
           ],

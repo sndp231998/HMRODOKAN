@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/pages/login.dart';
 
 class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({Key? key});
+  const ForgotPassword({super.key});
 
   @override
   State<ForgotPassword> createState() => _ForgotPasswordState();
@@ -26,9 +26,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   void _validateAndSubmit() {
-    if (_validateAndSave()) {
-      // TODO: Perform sign-up logic here
-    }
+    if (_validateAndSave()) {}
   }
 
   @override
@@ -100,7 +98,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const Login(userType: ''),
+        builder: (context) => const Login(),
       ),
     );
   }

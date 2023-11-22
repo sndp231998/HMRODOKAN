@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/pages/counter/create_bill.dart';
 import 'package:hmrodokan/pages/counter/history.dart';
 import 'package:hmrodokan/pages/counter/inventory.dart';
+import 'package:hmrodokan/provider/user.dart';
+import 'package:hmrodokan/utils.dart';
+import 'package:provider/provider.dart';
 
 class CounterDashboard extends StatefulWidget {
   const CounterDashboard({super.key});
@@ -15,6 +18,7 @@ class _CounterDashboardState extends State<CounterDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -78,7 +82,16 @@ class _CounterDashboardState extends State<CounterDashboard> {
                     ],
                   ),
                 ),
-              )
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await authService.signOut();
+                    } catch (e) {
+                      Utils().toastor(context, e.toString());
+                    }
+                  },
+                  child: const Text('Sign Out'))
             ],
           ),
         ),

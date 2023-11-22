@@ -6,6 +6,9 @@ import 'package:hmrodokan/pages/admin/sales.dart';
 import 'package:hmrodokan/pages/admin/user.dart';
 import 'package:hmrodokan/pages/admin/inventory.dart';
 import 'package:hmrodokan/pages/admin/user_create.dart';
+import 'package:hmrodokan/provider/user.dart';
+import 'package:hmrodokan/utils.dart';
+import 'package:provider/provider.dart';
 
 import 'dashboard_screen.dart';
 
@@ -44,9 +47,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
           '${_widgets[_currentIndex]["title"]}',
         ),
         backgroundColor: Colors.green,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                try {
+                  await Provider.of<UserProvider>(context, listen: false)
+                      .signOut();
+                } catch (e) {
+                  Utils().toastor(context, e.toString());
+                }
+              },
+              icon: const Icon(Icons.logout)),
+        ],
       ),
       body: _widgets[_currentIndex]["widget"],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'User'),

@@ -81,7 +81,7 @@ class _InventoryState extends State<Inventory> {
             left: 0,
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            child: SingleChildScrollView(
+            child: const SingleChildScrollView(
               child: Column(
                 children: [
                   InventoryCard(),
