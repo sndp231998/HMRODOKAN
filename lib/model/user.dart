@@ -1,83 +1,57 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
+  final String uid;
   final String fullname;
   final String email;
   final String address;
   final String phonenumber;
-  final bool isAdmin;
-  final String loginId;
-  final String password;
+  final String role;
+  final String username;
 
-  UserModel(
-      {required this.fullname,
-      required this.email,
-      required this.address,
-      required this.phonenumber,
-      required this.isAdmin,
-      required this.loginId,
-      required this.password});
+  UserModel({
+    required this.uid,
+    required this.fullname,
+    required this.email,
+    required this.address,
+    required this.phonenumber,
+    required this.role,
+    required this.username,
+  });
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     return UserModel(
+        uid: data['uid'],
         fullname: data['fullname'],
         email: data['email'],
         address: data['address'],
         phonenumber: data['phonenumber'],
-        isAdmin: data['isAdmin'],
-        loginId: data['loginId'],
-        password: data['password']);
+        role: data['role'],
+        username: data['username']);
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'uid': uid,
       'fullname': fullname,
       'email': email,
       'address': address,
       'phonenumber': phonenumber,
-      'isAdmin': isAdmin,
-      'loginId': loginId,
-      'password': password
+      'role': role,
+      'username': username,
     };
   }
 
-  // create users
-  Future<void> createNewUser(UserModel user) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').add(user.toMap());
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-
-  // create users
-  Future<void> listUsers() async {
-    try {
-      await FirebaseFirestore.instance.collection('users').get();
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-
-  // edit users
-  Future<void> editUser(String uid, UserModel user) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .update(user.toMap());
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-
-  // delete users
-  Future<void> deleteUser(String uid) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(uid).delete();
-    } catch (e) {
-      throw Exception(e);
-    }
+  static UserModel fromSnap(DocumentSnapshot snap) {
+    var snapshot = snap.data() as Map<String, dynamic>;
+    return UserModel(
+        uid: snapshot['uid'],
+        fullname: snapshot['fullname'],
+        email: snapshot['email'],
+        address: snapshot['address'],
+        phonenumber: snapshot['phonenumber'],
+        role: snapshot['role'],
+        username: snapshot['username']);
   }
 }

@@ -13,34 +13,34 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  UserProvider userRoleProvider = UserProvider();
+  // UserProvider userRoleProvider = UserProvider();
 
-  Future<void> changeCurrentRole() async {
-    userRoleProvider.setRole = await userRoleProvider.prefs.getRole();
-  }
+  // Future<void> changeCurrentRole() async {
+  //   userRoleProvider.setRole = await userRoleProvider.prefs.getRole();
+  // }
 
-  @override
-  void initState() {
-    changeCurrentRole();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   changeCurrentRole();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => userRoleProvider),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

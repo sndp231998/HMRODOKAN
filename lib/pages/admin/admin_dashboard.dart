@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/pages/admin/add_inventory.dart';
 import 'package:hmrodokan/pages/admin/category.dart';
 import 'package:hmrodokan/pages/admin/create_category.dart';
@@ -21,6 +22,7 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   int _currentIndex = 0;
+  FirebaseAuthHelper authHelper = FirebaseAuthHelper();
 
   void handleTap(int index) {
     // change the _currentIndex
@@ -51,8 +53,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           IconButton(
               onPressed: () async {
                 try {
-                  await Provider.of<UserProvider>(context, listen: false)
-                      .signOut();
+                  await authHelper.signOut();
                 } catch (e) {
                   Utils().toastor(context, e.toString());
                 }

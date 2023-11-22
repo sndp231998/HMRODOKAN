@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/pages/forgetpassword.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
@@ -15,26 +16,31 @@ class _LoginState extends State<Login> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  String currentRole = 'counter';
+
   final BoxDecoration activeUserBorder = BoxDecoration(
       border: Border.all(
     color: Colors.black,
     width: 2,
   ));
 
+  void toggleRole(String roleType) {
+    setState(() {
+      currentRole = roleType;
+    });
+  }
+
   void _login(BuildContext context) async {
     String email = usernameController.text;
     String password = passwordController.text;
 
-    final authService = Provider.of<UserProvider>(context, listen: false);
+    FirebaseAuthHelper authHelper = FirebaseAuthHelper();
+
     if (email == '' || password == '') {
       return Utils().toastor(context, 'Some fields are empty');
     }
     try {
-      if (authService.getCurrentRole == 'admin') {
-        await authService.loginUser(email, password);
-      }
-
-      if (authService.getCurrentRole == 'counter') {}
+      await authHelper.loginUser(email, password);
     } catch (e) {
       return Utils().toastor(context, e.toString());
     }
@@ -73,15 +79,14 @@ class _LoginState extends State<Login> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          if (authService.getCurrentRole != 'admin') {
-                            authService.setRole = 'admin';
+                          if (currentRole != 'admin') {
+                            toggleRole('admin');
                           }
                         },
                         child: Container(
                           padding: const EdgeInsets.all(8),
-                          decoration: authService.getCurrentRole == 'admin'
-                              ? activeUserBorder
-                              : null,
+                          decoration:
+                              currentRole == 'admin' ? activeUserBorder : null,
                           child: Column(
                             children: [
                               Image.asset(
@@ -100,13 +105,13 @@ class _LoginState extends State<Login> {
                       const SizedBox(width: 20),
                       GestureDetector(
                         onTap: () {
-                          if (authService.getCurrentRole != 'counter') {
-                            authService.setRole = 'counter';
+                          if (currentRole != 'counter') {
+                            toggleRole('counter');
                           }
                         },
                         child: Container(
                           padding: const EdgeInsets.all(8),
-                          decoration: authService.getCurrentRole == 'counter'
+                          decoration: currentRole == 'counter'
                               ? activeUserBorder
                               : null,
                           child: Column(
@@ -132,10 +137,8 @@ class _LoginState extends State<Login> {
                   padding: const EdgeInsets.all(16.0),
                   child: TextFormField(
                     controller: usernameController,
-                    decoration: InputDecoration(
-                      labelText: authService.getCurrentRole == 'admin'
-                          ? 'Email'
-                          : 'Login ID',
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
                     ),
                   ),
                 ),

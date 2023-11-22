@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/pages/counter/create_bill.dart';
 import 'package:hmrodokan/pages/counter/history.dart';
 import 'package:hmrodokan/pages/counter/inventory.dart';
@@ -15,6 +16,7 @@ class CounterDashboard extends StatefulWidget {
 
 class _CounterDashboardState extends State<CounterDashboard> {
   int _currentIndex = 0;
+  FirebaseAuthHelper authHelper = FirebaseAuthHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +88,7 @@ class _CounterDashboardState extends State<CounterDashboard> {
               ElevatedButton(
                   onPressed: () async {
                     try {
-                      await authService.signOut();
+                      await authHelper.signOut();
                     } catch (e) {
                       Utils().toastor(context, e.toString());
                     }

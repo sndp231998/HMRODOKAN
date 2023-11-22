@@ -1,37 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hmrodokan/prefs.dart';
+import 'package:hmrodokan/firebase/firebase_auth.dart';
+import 'package:hmrodokan/model/user.dart';
 
 class UserProvider extends ChangeNotifier {
-  Prefs prefs = Prefs();
-  String role = '';
+  // Prefs prefs = Prefs();
+  UserModel? _user;
+  final FirebaseAuthHelper _authHelper = FirebaseAuthHelper();
 
-  // setter
-  set setRole(String role) {
-    this.role = role;
-    prefs.setRole(role);
+  Future<void> setUser(String role) async {
+    _user = await _authHelper.getUserInstance();
     notifyListeners();
   }
 
   // getter
-  String get getCurrentRole => role;
-
-  // login
-  Future<void> loginUser(String email, String password) async {
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-
-  // signout
-  Future<void> signOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
+  UserModel get getUser => _user!;
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/components/table_head.dart';
+import 'package:hmrodokan/firebase/firebase_auth.dart';
+import 'package:hmrodokan/model/user.dart';
+import 'package:hmrodokan/utils.dart';
 
 class User extends StatefulWidget {
   const User({super.key});
@@ -9,6 +12,24 @@ class User extends StatefulWidget {
 }
 
 class _UserState extends State<User> {
+  FirebaseAuthHelper authHelper = FirebaseAuthHelper();
+
+  List<UserModel> _userList = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    getUserList();
+    print(_userList.toString());
+  }
+
+  void getUserList() {
+    setState(() async {
+      _userList = await authHelper.listUsers();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(

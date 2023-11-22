@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/components/back_home.dart';
+import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/model/user.dart';
+import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
 
 class UserCreate extends StatefulWidget {
@@ -21,32 +23,32 @@ class _UserCreateState extends State<UserCreate> {
   TextEditingController password = TextEditingController();
 
   final List _userRole = ['counter', 'admin'];
+  FirebaseAuthHelper authHelper = FirebaseAuthHelper();
 
   Future<void> handleCreateUser(BuildContext context) async {
-    String fullname_text = fullname.text;
-    String email_text = email.text;
-    String address_text = address.text;
-    String contact_text = contact.text;
-    String login_text = login.text;
-    String password_text = password.text;
-    if (fullname_text == '' ||
-        email_text == '' ||
-        address_text == '' ||
-        contact_text == '' ||
-        login_text == '' ||
-        password_text == '') {
+    String fullnameText = fullname.text;
+    String emailText = email.text;
+    String addressText = address.text;
+    String contactText = contact.text;
+    String loginText = login.text;
+    String passwordText = password.text;
+    if (fullnameText == '' ||
+        emailText == '' ||
+        addressText == '' ||
+        contactText == '' ||
+        loginText == '' ||
+        passwordText == '') {
       return Utils().toastor(context, 'Some fields are empty');
     }
     try {
-      UserModel user = UserModel(
-          fullname: fullname_text,
-          email: email_text,
-          address: address_text,
-          phonenumber: contact_text,
-          isAdmin: dropDownValue == 'admin' ? true : false,
-          loginId: login_text,
-          password: password_text);
-      await user.createNewUser(user);
+      await authHelper.createNewUser(
+          email: emailText,
+          username: loginText,
+          fullname: fullnameText,
+          password: passwordText,
+          role: dropDownValue,
+          address: addressText,
+          phonenumber: contactText);
       Utils().toastor(context, 'New User Added');
     } catch (e) {
       Utils().toastor(context, e.toString());

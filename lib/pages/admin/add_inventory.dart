@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:hmrodokan/components/back_home.dart';
 import 'package:hmrodokan/components/bar_qr_scanner.dart';
 
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
 
   @override
-  _AddItemPageState createState() => _AddItemPageState();
+  AddItemPageState createState() => AddItemPageState();
 }
 
-class _AddItemPageState extends State<AddItemPage> {
+class AddItemPageState extends State<AddItemPage> {
   final _formKey = GlobalKey<FormState>();
 
   String _barqrRes = '';
