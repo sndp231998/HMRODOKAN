@@ -1,8 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/firebase_options.dart';
+import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/counter/history.dart';
 import 'package:hmrodokan/pages/counter/invoice.dart';
+import 'package:hmrodokan/prefs.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/services/auth.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +16,31 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+Future<void> getCurrentUserDetails(BuildContext context) async {
+  UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+  FirebaseAuthHelper authHelper = FirebaseAuthHelper();
+  String userData = await Prefs.getUser();
+
+  if (userData.isNotEmpty) {
+    userProvider.setUser = UserModel.fromJson(userData);
+  } else {
+    UserModel? user = await authHelper.getUserInstance();
+
+    if (user != null) {
+      await Prefs.setUser(user.toJson());
+      userProvider.setUser = user;
+    }
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -24,38 +51,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // UserProvider userRoleProvider = UserProvider();
-
-  // Future<void> changeCurrentRole() async {
-  //   userRoleProvider.setRole = await userRoleProvider.prefs.getRole();
-  // }
-
-  // @override
-  // void initState() {
-  //   changeCurrentRole();
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Hmrodkan',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-          useMaterial3: true,
-        ),
-        home: const AuthService(),
-        routes: {
-          'invoice': (context) => const Invoice(),
-          'history': (context) => const History(),
+    return MaterialApp(
+      home: Builder(
+        builder: (context) {
+          getCurrentUserDetails(context);
+          return const AuthService();
         },
-        // setup routes here
       ),
+      routes: {
+        'invoice': (context) => const Invoice(),
+        'history': (context) => const History(),
+      },
     );
   }
 }
