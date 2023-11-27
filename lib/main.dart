@@ -26,8 +26,8 @@ void main() async {
   );
 }
 
-Future<void> getCurrentUserDetails(BuildContext context) async {
-  UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+Future<void> getCurrentUserDetails() async {
+  UserProvider userProvider = UserProvider();
   FirebaseAuthHelper authHelper = FirebaseAuthHelper();
   String userData = await Prefs.getUser();
 
@@ -54,9 +54,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+      ),
       home: Builder(
         builder: (context) {
-          getCurrentUserDetails(context);
+          getCurrentUserDetails();
           return const AuthService();
         },
       ),

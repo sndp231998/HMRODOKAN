@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/model/product.dart';
 
 class AdminProduct extends StatelessWidget {
-  const AdminProduct({super.key});
+  final ProductModel products;
+  const AdminProduct({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +28,18 @@ class AdminProduct extends StatelessWidget {
           ),
 
           // product name plus qty
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Authentic Samayang Noodles',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  products.title,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 17),
                 ),
                 Text(
-                  'Quantity: 1000pc',
-                  style: TextStyle(
+                  'Quantity: ${products.quantity}pc',
+                  style: const TextStyle(
                     color: Colors.black54,
                   ),
                 ),

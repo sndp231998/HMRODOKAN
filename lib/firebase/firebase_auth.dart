@@ -7,22 +7,27 @@ class FirebaseAuthHelper {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   // get user instance
-  Future<UserModel> getUserInstance() async {
+  Future<UserModel?> getUserInstance() async {
     try {
-      User currentUser = _firebaseAuth.currentUser!;
-
-      DocumentSnapshot documentSnapshot = await _firebaseFirestore
-          .collection('users')
-          .doc(currentUser.uid)
-          .get();
-
-      return UserModel.fromSnap(documentSnapshot);
+      User? currentUser = _firebaseAuth.currentUser;
+      if (currentUser != null && currentUser.uid.isNotEmpty) {
+        DocumentSnapshot documentSnapshot = await _firebaseFirestore
+            .collection('users')
+            .doc(currentUser.uid)
+            .get();
+        // Check if the document exists, has data, and the 'uid' field is not null
+        if (documentSnapshot.exists) {
+          return UserModel.fromSnap(documentSnapshot);
+        }
+      }
+      return null;
     } catch (e) {
+      // Log the error and return null
       throw Exception(e);
     }
   }
 
-// login admin
+// login
   Future<void> loginUser(String email, String password) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
@@ -41,6 +46,7 @@ class FirebaseAuthHelper {
     required String address,
     required String phonenumber,
     required String username,
+    required String storeId,
   }) async {
     try {
       UserCredential cred = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -48,6 +54,7 @@ class FirebaseAuthHelper {
       UserModel user = UserModel(
           uid: cred.user!.uid,
           fullname: fullname,
+          storeId: storeId,
           email: email,
           address: address,
           phonenumber: phonenumber,
@@ -70,6 +77,7 @@ class FirebaseAuthHelper {
       await _firebaseFirestore.collection('users').get().then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           String uid = docSnapshot.get('uid');
+          String storeId = docSnapshot.get('storeId');
           String fullname = docSnapshot.get('fullname');
           String email = docSnapshot.get('email');
           String role = docSnapshot.get('role');
@@ -79,6 +87,7 @@ class FirebaseAuthHelper {
 
           UserModel user = UserModel(
               uid: uid,
+              storeId: storeId,
               fullname: fullname,
               email: email,
               address: address,

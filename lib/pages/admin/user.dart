@@ -21,93 +21,168 @@ class _UserState extends State<User> {
     super.initState();
 
     getUserList();
-    print(_userList.toString());
   }
 
-  void getUserList() {
-    setState(() async {
-      _userList = await authHelper.listUsers();
+  Future<void> getUserList() async {
+    List<UserModel> userList = await authHelper.listUsers();
+
+    setState(() {
+      _userList = userList;
     });
+  }
+
+  Future<void> deleteUser(String uid) async {
+    try {
+      await authHelper.deleteUser(uid);
+      await getUserList();
+      if (context.mounted) {
+        Utils().toastor(context, 'Successfully deleted');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Utils().toastor(context, e.toString());
+      }
+    }
+    if (context.mounted) Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          // search box
+    if (_userList.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // search box
 
-          // listing of users
-          Table(
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            children: [
-              const TableRow(children: [
-                TableHead(tableData: 'ID'),
-                TableHead(tableData: 'Fullname'),
-                TableHead(tableData: 'Email'),
-                TableHead(tableData: 'Role'),
-                TableHead(tableData: 'Address'),
-                TableHead(tableData: ''),
-              ]),
-              TableRow(children: [
-                const TableCell(child: Text('123')),
-                const TableCell(child: Text('alex')),
-                const TableCell(child: Text('alex@a.xom')),
-                const TableCell(
-                    child: Text(
-                  'Admin',
-                  style: TextStyle(
-                    backgroundColor: Colors.black38,
-                    color: Colors.white,
+            // listing of users
+            SingleChildScrollView(
+              child: Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                columnWidths: const {
+                  0: FlexColumnWidth(2), // Adjust column widths as needed
+                  1: FlexColumnWidth(3),
+                  2: FlexColumnWidth(2),
+                  3: FlexColumnWidth(3),
+                  4: FlexColumnWidth(1),
+                },
+                border: TableBorder.all(color: Colors.black26),
+                children: [
+                  TableRow(
+                    decoration: BoxDecoration(color: Colors.grey[200]),
+                    children: const [
+                      TableCell(
+                          child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text('Fullname'))),
+                      TableCell(
+                          child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text('Email'))),
+                      TableCell(
+                          child: Padding(
+                              padding: EdgeInsets.all(8), child: Text('Role'))),
+                      TableCell(
+                          child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text('Address'))),
+                      TableCell(
+                          child: Padding(
+                              padding: EdgeInsets.all(8), child: Text(''))),
+                    ],
                   ),
-                )),
-                const TableCell(child: Text('alex address')),
-                TableCell(
-                  child: PopupMenuButton(onSelected: (value) {
-                    if (value == 'more') {}
-                    if (value == 'edit') {}
-                    if (value == 'delete') {}
-                  }, itemBuilder: ((context) {
-                    return [
-                      const PopupMenuItem(
-                          value: 'more',
-                          textStyle: TextStyle(fontSize: 10),
-                          child: ListTile(
-                            leading: Icon(
-                              Icons.details,
-                              size: 20,
+                  for (UserModel user in _userList)
+                    TableRow(
+                      children: [
+                        TableCell(
+                            child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(user.fullname))),
+                        TableCell(
+                            child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(user.email))),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              user.role,
+                              style: const TextStyle(
+                                backgroundColor: Colors.black38,
+                                color: Colors.white,
+                              ),
                             ),
-                            title: Text('More'),
-                          )),
-                      const PopupMenuItem(
-                          value: 'edit',
-                          textStyle: TextStyle(fontSize: 10),
-                          child: ListTile(
-                            leading: Icon(
-                              Icons.edit,
-                              size: 20,
-                            ),
-                            title: Text('Edit'),
-                          )),
-                      const PopupMenuItem(
-                          value: 'delete',
-                          textStyle: TextStyle(fontSize: 10),
-                          child: ListTile(
-                            leading: Icon(
-                              Icons.delete,
-                              size: 20,
-                            ),
-                            title: Text('Delete'),
-                          )),
-                    ];
-                  })),
-                ),
-              ])
-            ],
-          )
-        ],
-      ),
+                          ),
+                        ),
+                        TableCell(
+                            child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(user.address))),
+                        TableCell(
+                            child: IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      builder: (context) {
+                                        return Column(
+                                          children: [
+                                            const ListTile(
+                                              leading: Icon(Icons.details),
+                                              title: Text('More'),
+                                            ),
+                                            const ListTile(
+                                              leading: Icon(Icons.edit),
+                                              title: Text('Edit'),
+                                            ),
+                                            ListTile(
+                                              onTap: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Delete User'),
+                                                        content: const Text(
+                                                            'Are you sure to remove the user?'),
+                                                        actions: [
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                deleteUser(
+                                                                    user.uid);
+                                                              },
+                                                              child: const Text(
+                                                                  'Yes')),
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                              child: const Text(
+                                                                  'Cancel')),
+                                                        ],
+                                                      );
+                                                    });
+                                              },
+                                              leading: const Icon(Icons.delete),
+                                              title: const Text('Delete'),
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                },
+                                icon: const Icon(Icons.more_vert))),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return const Center(
+      child: Text('Please add users to view here'),
     );
   }
 }

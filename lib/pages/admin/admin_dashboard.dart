@@ -81,50 +81,50 @@ class _AdminDashboardState extends State<AdminDashboard> {
         unselectedItemColor: Colors.grey,
         onTap: handleTap,
       ),
-      floatingActionButton: PopupMenuButton(
-        itemBuilder: (context) {
-          return [
-            const PopupMenuItem(
-              value: 'admin-users',
-              child: ListTile(
-                leading: Icon(Icons.people),
-                title: Text('Add Users'),
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'admin-inventory',
-              child: ListTile(
-                leading: Icon(Icons.add_box),
-                title: Text('Add Inventory'),
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'admin-category',
-              child: ListTile(
-                leading: Icon(Icons.category),
-                title: Text('Add Category'),
-              ),
-            )
-          ];
-        },
-        onSelected: (value) {
-          if (value == 'admin-users') {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const UserCreate()));
-          }
-          if (value == 'admin-inventory') {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AddItemPage()));
-          }
-          if (value == 'admin-category') {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const CreateCategory()));
-          }
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+              context: context,
+              builder: (builder) {
+                return Column(
+                  children: [
+                    ListTile(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const UserCreate()));
+                      },
+                      leading: const Icon(Icons.people),
+                      title: const Text('Add new users'),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AddItemPage()));
+                      },
+                      leading: const Icon(Icons.add_box),
+                      title: const Text('Add new product'),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const CreateCategory()));
+                      },
+                      leading: const Icon(Icons.category),
+                      title: const Text('Add new category'),
+                    ),
+                  ],
+                );
+              });
         },
         child: const Icon(Icons.add_circle),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/components/back_home.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
-import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
+import 'package:provider/provider.dart';
 
 class UserCreate extends StatefulWidget {
   const UserCreate({super.key});
@@ -14,6 +14,7 @@ class UserCreate extends StatefulWidget {
 
 class _UserCreateState extends State<UserCreate> {
   String dropDownValue = 'counter';
+  bool isSaving = false;
 
   TextEditingController fullname = TextEditingController();
   TextEditingController email = TextEditingController();
@@ -25,7 +26,17 @@ class _UserCreateState extends State<UserCreate> {
   final List _userRole = ['counter', 'admin'];
   FirebaseAuthHelper authHelper = FirebaseAuthHelper();
 
+  void toggleIsSaving(bool value) {
+    setState(() {
+      isSaving = value;
+    });
+  }
+
   Future<void> handleCreateUser(BuildContext context) async {
+    toggleIsSaving(true);
+
+    String storeId =
+        Provider.of<UserProvider>(context, listen: false).getUser!.storeId;
     String fullnameText = fullname.text;
     String emailText = email.text;
     String addressText = address.text;
@@ -43,16 +54,24 @@ class _UserCreateState extends State<UserCreate> {
     try {
       await authHelper.createNewUser(
           email: emailText,
+          storeId: storeId,
           username: loginText,
           fullname: fullnameText,
           password: passwordText,
           role: dropDownValue,
           address: addressText,
           phonenumber: contactText);
-      Utils().toastor(context, 'New User Added');
+      fullname.text = '';
+      email.text = '';
+      address.text = '';
+      contact.text = '';
+      login.text = '';
+      password.text = '';
+      if (context.mounted) Utils().toastor(context, 'New User Added');
     } catch (e) {
-      Utils().toastor(context, e.toString());
+      if (context.mounted) Utils().toastor(context, e.toString());
     }
+    toggleIsSaving(false);
   }
 
   @override
@@ -155,9 +174,13 @@ class _UserCreateState extends State<UserCreate> {
                   style: const ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(Colors.green),
                       foregroundColor: MaterialStatePropertyAll(Colors.white)),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text('Create New User'),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: isSaving
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : const Text('Create New User'),
                   ),
                 ),
                 const SizedBox(

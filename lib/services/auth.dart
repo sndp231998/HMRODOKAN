@@ -4,6 +4,7 @@ import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/admin/admin_dashboard.dart';
 import 'package:hmrodokan/pages/counter/counter_dashboard.dart';
 import 'package:hmrodokan/pages/login.dart';
+import 'package:hmrodokan/prefs.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:provider/provider.dart';
 
@@ -34,6 +35,7 @@ class AuthService extends StatelessWidget {
                 }
               }
             }
+            Prefs.clearUser();
             return const Login();
           },
         );

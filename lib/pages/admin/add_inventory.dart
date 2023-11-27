@@ -1,6 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:hmrodokan/components/bar_qr_scanner.dart';
+import 'package:hmrodokan/firebase/firebase_firestore.dart';
+import 'package:hmrodokan/model/category.dart';
+import 'package:hmrodokan/provider/user.dart';
+import 'package:hmrodokan/services/image_helper.dart';
+import 'package:hmrodokan/utils.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
@@ -11,8 +20,15 @@ class AddItemPage extends StatefulWidget {
 
 class AddItemPageState extends State<AddItemPage> {
   final _formKey = GlobalKey<FormState>();
+  FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
+
+  List<CategoryModel> dropDownList = [];
 
   String _barqrRes = '';
+  bool isSaving = false;
+  String dropDownCategory = '';
+
+  File? _image;
 
   final _productNameController = TextEditingController();
   final _priceController = TextEditingController();
@@ -21,7 +37,112 @@ class AddItemPageState extends State<AddItemPage> {
   final _mrpController = TextEditingController();
   final _taxController = TextEditingController();
   final _barcodeController = TextEditingController();
-  final _categoryController = TextEditingController();
+  final _imageUrlController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    listCategory();
+  }
+
+  void toggleIsSaving(bool value) {
+    setState(() {
+      isSaving = value;
+    });
+  }
+
+  Future<void> listCategory() async {
+    List<CategoryModel> listCategories =
+        await firebaseFirestoreHelper.listCategories();
+
+    setState(() {
+      dropDownList = listCategories;
+      dropDownCategory = dropDownList.first.uid;
+    });
+  }
+
+  Future<void> createNewProduct() async {
+    toggleIsSaving(true);
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+
+    String titleText = _productNameController.text;
+    int quantityText = int.parse(_quantityController.text);
+    double purchaseText = double.parse(_purchasePriceController.text);
+    double sellingText = double.parse(_priceController.text);
+
+    try {
+      if (titleText.isNotEmpty) {
+        await firebaseFirestoreHelper.createNewProducts(
+            titleText,
+            userProvider.getUser!.storeId,
+            dropDownCategory,
+            quantityText,
+            purchaseText,
+            sellingText,
+            '');
+        _productNameController.text = '';
+        _quantityController.text = '';
+        _purchasePriceController.text = '';
+        _priceController.text = '';
+
+        if (context.mounted) {
+          Utils().toastor(context, 'Products added Successfully.');
+        }
+      }
+    } catch (e) {
+      if (context.mounted) Utils().toastor(context, e.toString());
+    }
+
+    toggleIsSaving(false);
+  }
+
+  _showDialog(BuildContext context) {
+    ImageHelper imageHelper = ImageHelper();
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            children: [
+              TextButton(
+                  onPressed: () {
+                    setState(() async {
+                      _image =
+                          await imageHelper.getImageURL(ImageSource.gallery);
+                    });
+                  },
+                  child: const Text('Choose from gallery')),
+              TextButton(
+                  onPressed: () {
+                    setState(() async {
+                      _image =
+                          await imageHelper.getImageURL(ImageSource.camera);
+                    });
+                  },
+                  child: const Text('Capture new Photo')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'))
+            ],
+          );
+        });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _productNameController.dispose();
+    _priceController.dispose();
+    _quantityController.dispose();
+    _purchasePriceController.dispose();
+    _mrpController.dispose();
+    _taxController.dispose();
+    _barcodeController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,26 +279,47 @@ class AddItemPageState extends State<AddItemPage> {
                             });
                       },
                     ),
-                    TextFormField(
-                      controller: _categoryController,
-                      decoration: const InputDecoration(
-                        labelText: 'Category',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a category.';
-                        }
-                        return null;
+                    DropdownButton(
+                        hint: const Text('Choose Category'),
+                        value: dropDownCategory.isNotEmpty
+                            ? dropDownCategory
+                            : null,
+                        items: dropDownList.map((value) {
+                          return DropdownMenuItem<String>(
+                            value: value.uid,
+                            child: Text(value.title),
+                          );
+                        }).toList(),
+                        onChanged: (category) {
+                          setState(() {
+                            dropDownCategory = category!;
+                          });
+                        }),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Text('Insert Image'),
+                    IconButton(
+                      onPressed: () {
+                        _showDialog(context);
                       },
+                      icon: const Icon(Icons.add_a_photo),
+                    ),
+                    TextField(
+                      controller: _imageUrlController,
+                      keyboardType: TextInputType.name,
+                      decoration: const InputDecoration(hintText: 'Paste URL'),
                     ),
                     const SizedBox(height: 16.0),
                     ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            // Add item to database
-                          }
+                          createNewProduct();
                         },
-                        child: const Text('Add Item')),
+                        child: isSaving
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : const Text('Add Item')),
                   ],
                 ),
               ),

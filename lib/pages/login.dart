@@ -42,13 +42,12 @@ class _LoginState extends State<Login> {
     try {
       await authHelper.loginUser(email, password);
     } catch (e) {
-      return Utils().toastor(context, e.toString());
+      if (context.mounted) Utils().toastor(context, e.toString());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<UserProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
