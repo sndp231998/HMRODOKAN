@@ -13,32 +13,30 @@ class AuthService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(
-      builder: (context, userProvider, _) {
-        return StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+    UserProvider userProvider = Provider.of<UserProvider>(context);
 
-            UserModel? user = userProvider.getUser;
-            if (snapshot.data != null) {
-              if (user != null) {
-                if (user.role == 'admin') {
-                  return const AdminDashboard();
-                }
-                if (user.role == 'counter') {
-                  return const CounterDashboard();
-                }
-              }
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        UserModel? user = userProvider.getUser;
+        if (snapshot.data != null) {
+          if (user != null) {
+            if (user.role == 'admin') {
+              return const AdminDashboard();
             }
-            Prefs.clearUser();
-            return const Login();
-          },
-        );
+            if (user.role == 'counter') {
+              return const CounterDashboard();
+            }
+          }
+        }
+        Prefs.clearUser();
+        return const Login();
       },
     );
   }

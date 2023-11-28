@@ -16,21 +16,24 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Initialize UserProvider before runApp
+  UserProvider userProvider = UserProvider();
+  await getCurrentUserDetails(userProvider);
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        // Use ChangeNotifierProvider.value to provide an existing instance
+        ChangeNotifierProvider.value(value: userProvider),
       ],
       child: const MyApp(),
     ),
   );
 }
 
-Future<void> getCurrentUserDetails() async {
-  UserProvider userProvider = UserProvider();
+Future<void> getCurrentUserDetails(UserProvider userProvider) async {
   FirebaseAuthHelper authHelper = FirebaseAuthHelper();
   String userData = await Prefs.getUser();
-
   if (userData.isNotEmpty) {
     userProvider.setUser = UserModel.fromJson(userData);
   } else {
@@ -43,14 +46,9 @@ Future<void> getCurrentUserDetails() async {
   }
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -58,12 +56,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       ),
-      home: Builder(
-        builder: (context) {
-          getCurrentUserDetails();
-          return const AuthService();
-        },
-      ),
+      home: const AuthService(),
       routes: {
         'invoice': (context) => const Invoice(),
         'history': (context) => const History(),

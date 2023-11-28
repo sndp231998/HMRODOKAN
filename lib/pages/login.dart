@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
+import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/forgetpassword.dart';
+import 'package:hmrodokan/prefs.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:provider/provider.dart';
@@ -35,14 +37,33 @@ class _LoginState extends State<Login> {
     String password = passwordController.text;
 
     FirebaseAuthHelper authHelper = FirebaseAuthHelper();
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
 
     if (email == '' || password == '') {
       return Utils().toastor(context, 'Some fields are empty');
     }
     try {
       await authHelper.loginUser(email, password);
+      getCurrentUserDetails(userProvider);
+      if (context.mounted) Utils().toastor(context, 'Logging In');
     } catch (e) {
       if (context.mounted) Utils().toastor(context, e.toString());
+    }
+  }
+
+  Future<void> getCurrentUserDetails(UserProvider userProvider) async {
+    FirebaseAuthHelper authHelper = FirebaseAuthHelper();
+    String userData = await Prefs.getUser();
+    if (userData.isNotEmpty) {
+      userProvider.setUser = UserModel.fromJson(userData);
+    } else {
+      UserModel? user = await authHelper.getUserInstance();
+
+      if (user != null) {
+        await Prefs.setUser(user.toJson());
+        userProvider.setUser = user;
+      }
     }
   }
 
