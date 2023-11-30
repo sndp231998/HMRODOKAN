@@ -9,13 +9,15 @@ class FirebaseFirestoreHelper {
   // ----------------------------------------------------------------------
   // Categories
   // save categories
-  Future<void> createNewCategories(String title, String imageUrl) async {
+  Future<void> createNewCategories(
+      String title, String imageUrl, String storeId) async {
     var randomId = _uuid.v4();
 
     CategoryModel categoryModel = CategoryModel(
         uid: randomId.toString(),
         imageUrl: imageUrl,
         isPrivate: false,
+        storeId: storeId,
         title: title);
     await _firebaseFirestore
         .collection('categories')
@@ -36,12 +38,14 @@ class FirebaseFirestoreHelper {
         String title = docSnapshot.get('title');
         String imageUrl = docSnapshot.get('imageUrl');
         bool isPrivate = docSnapshot.get('isPrivate');
+        String storeId = docSnapshot.get('storeId');
 
         CategoryModel category = CategoryModel(
           uid: uid,
           title: title,
           imageUrl: imageUrl,
           isPrivate: isPrivate,
+          storeId: storeId,
         );
 
         categoryList.add(category);
@@ -98,16 +102,20 @@ class FirebaseFirestoreHelper {
   }
 
   // list Products
-  Future<List<ProductModel>> listProducts(String filterValue) async {
+  Future<List<ProductModel>> listProducts(
+      String filterValue, String storeId) async {
     List<ProductModel> productList = [];
 
     final queryRef;
 
     if (filterValue.isEmpty) {
-      queryRef = _firebaseFirestore.collection('Products');
+      queryRef = _firebaseFirestore
+          .collection('Products')
+          .where('storeId', isEqualTo: storeId);
     } else {
       queryRef = _firebaseFirestore
           .collection('Products')
+          .where('storeId', isEqualTo: storeId)
           .where('categoryId', isEqualTo: filterValue);
     }
 
@@ -150,6 +158,7 @@ class FirebaseFirestoreHelper {
       'quantity': product.quantity,
       'purchasePrice': product.purchasePrice,
       'sellingPrice': product.sellingPrice,
+      'scannerCode': product.scannerCode,
     });
   }
 

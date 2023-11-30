@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
+import 'package:hmrodokan/firebase/firebase_storage.dart';
 import 'package:hmrodokan/model/category.dart';
 import 'package:hmrodokan/provider/admin.dart';
 import 'package:hmrodokan/provider/products.dart';
+import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/services/image_helper.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,22 +38,32 @@ class _CategoryCardState extends State<CategoryCard> {
     if (context.mounted) Navigator.of(context).pop();
   }
 
-  Future<void> handleEdit(BuildContext context) async {
+  Future<void> handleEdit(BuildContext context, String storeId) async {
     FirebaseFirestoreHelper firestoreHelper = FirebaseFirestoreHelper();
 
     String titleText = _titleController.text;
     String imageText = _imageUrlController.text;
 
-    if (titleText.isEmpty || imageText.isEmpty) {
+    if (titleText.isEmpty || (imageText.isEmpty || _image != null)) {
       return Utils().toastor(context, 'Some fields are empty');
     }
 
-    CategoryModel categoriesModel = CategoryModel(
+    try {
+      // store images if image is uploaded
+      if (_image != null) {
+        FirebaseStorageHelper firebaseStorageHelper = FirebaseStorageHelper();
+        imageText =
+            await firebaseStorageHelper.uploadImage(_image!, 'categories');
+      }
+
+      CategoryModel categoriesModel = CategoryModel(
         uid: widget.category.uid,
         title: titleText,
         imageUrl: imageText,
-        isPrivate: widget.category.isPrivate);
-    try {
+        isPrivate: widget.category.isPrivate,
+        storeId: storeId,
+      );
+
       await firestoreHelper.editCategories(categoriesModel);
       if (context.mounted) Utils().toastor(context, 'Edit Successful');
     } catch (e) {
@@ -74,6 +86,9 @@ class _CategoryCardState extends State<CategoryCard> {
         Provider.of<ProductsProvider>(context, listen: false);
     AdminProvider adminProvider =
         Provider.of<AdminProvider>(context, listen: false);
+
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
     return GestureDetector(
       onTap: () {
         productsProvider.setFilterValue = widget.category.uid;
@@ -183,7 +198,8 @@ class _CategoryCardState extends State<CategoryCard> {
                                   actions: [
                                     TextButton(
                                         onPressed: () {
-                                          handleEdit(context);
+                                          handleEdit(context,
+                                              userProvider.getUser!.storeId);
                                         },
                                         child: const Text('Save')),
                                     TextButton(

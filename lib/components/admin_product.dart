@@ -33,8 +33,8 @@ class AdminProduct extends StatelessWidget {
       child: Row(
         children: [
           // image
-          Image.asset(
-            'assets/images/samayang.jpeg',
+          Image.network(
+            products.imageUrl,
             width: 80,
           ),
 

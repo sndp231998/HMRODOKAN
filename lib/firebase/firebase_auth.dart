@@ -71,10 +71,14 @@ class FirebaseAuthHelper {
   }
 
   // list users with pagination
-  Future<List<UserModel>> listUsers() async {
+  Future<List<UserModel>> listUsers(String storeId) async {
     List<UserModel> userList = [];
     try {
-      await _firebaseFirestore.collection('users').get().then((querySnapshot) {
+      await _firebaseFirestore
+          .collection('users')
+          .where('storeId', isEqualTo: storeId)
+          .get()
+          .then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           String uid = docSnapshot.get('uid');
           String storeId = docSnapshot.get('storeId');
@@ -117,7 +121,7 @@ class FirebaseAuthHelper {
   }
 
   // delete users
-  Future<void> deleteUser(String uid) async {
+  Future<void> deleteUser(String storeId, String uid) async {
     try {
       await _firebaseFirestore.collection('users').doc(uid).delete();
     } catch (e) {
@@ -144,11 +148,12 @@ class FirebaseAuthHelper {
   }
 
 // get number of counters
-  Future<int> getNoCounters() async {
+  Future<int> getNoCounters(String storeId) async {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('users')
           .where('role', isEqualTo: 'counter')
+          .where('storeId', isEqualTo: storeId)
           .get();
 
       return querySnapshot.size;

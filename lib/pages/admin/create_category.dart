@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/firebase/firebase_storage.dart';
+import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/services/image_helper.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class CreateCategory extends StatefulWidget {
   const CreateCategory({super.key});
@@ -27,7 +29,7 @@ class _CreateCategoryState extends State<CreateCategory> {
   }
 
   // create category
-  Future<void> handleSave() async {
+  Future<void> handleSave(String storeId) async {
     toggleIsSaving(true);
     String titleText = _titleController.text;
     String imageUrlText = _imageUrlController.text;
@@ -44,7 +46,8 @@ class _CreateCategoryState extends State<CreateCategory> {
 
     // save to firestore
     FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
-    await firebaseFirestoreHelper.createNewCategories(titleText, imageUrlText);
+    await firebaseFirestoreHelper.createNewCategories(
+        titleText, imageUrlText, storeId);
     _titleController.text = '';
     _imageUrlController.text = '';
     toggleIsSaving(false);
@@ -94,6 +97,8 @@ class _CreateCategoryState extends State<CreateCategory> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Category'),
@@ -126,7 +131,7 @@ class _CreateCategoryState extends State<CreateCategory> {
             ),
             ElevatedButton(
               onPressed: () {
-                handleSave();
+                handleSave(userProvider.getUser!.storeId);
               },
               child: isSaving
                   ? const Center(

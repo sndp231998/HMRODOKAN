@@ -34,7 +34,7 @@ class _ProductViewState extends State<ProductView> {
 
   bool isSaving = false;
 
-  late String scanCode = widget.product!.scannerCode;
+  late String scanCode;
 
   late final _productNameController =
       TextEditingController(text: widget.product!.title);
@@ -101,6 +101,9 @@ class _ProductViewState extends State<ProductView> {
     super.initState();
 
     listCategory();
+    setState(() {
+      scanCode = widget.product!.scannerCode;
+    });
   }
 
   Future<void> listCategory() async {
@@ -109,7 +112,7 @@ class _ProductViewState extends State<ProductView> {
 
     setState(() {
       dropDownList = listCategories;
-      dropDownCategory = dropDownList.first.uid;
+      dropDownCategory = widget.product!.categoryId;
     });
   }
 
@@ -182,7 +185,7 @@ class _ProductViewState extends State<ProductView> {
             children: [
               Stack(
                 children: [
-                  Image.asset('assets/images/samayang.jpeg'),
+                  Image.network(_imageUrlController.text),
                   if (widget.isEditing)
                     IconButton(
                         onPressed: () {

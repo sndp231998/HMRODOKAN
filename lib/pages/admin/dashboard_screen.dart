@@ -83,7 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       totalSales = salesWithProducts['totalSales'] ?? 0;
       totalProductsSold = salesWithProducts['totalProductsSold'] ?? 0;
       outOfStock = await firebaseFirestoreHelper.getOutOfStock(storeId);
-      totalCounters = await firebaseAuthHelper.getNoCounters();
+      totalCounters = await firebaseAuthHelper.getNoCounters(storeId);
 
       setState(() {
         // Update the state to trigger a rebuild with the new data

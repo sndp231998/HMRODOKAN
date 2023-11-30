@@ -20,7 +20,7 @@ class _CounterDashboardState extends State<CounterDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<UserProvider>(context, listen: false);
+    // final authService = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -90,7 +90,8 @@ class _CounterDashboardState extends State<CounterDashboard> {
                     try {
                       await authHelper.signOut();
                     } catch (e) {
-                      Utils().toastor(context, e.toString());
+                      if (context.mounted)
+                        Utils().toastor(context, e.toString());
                     }
                   },
                   child: const Text('Sign Out'))

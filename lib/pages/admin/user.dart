@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hmrodokan/components/table_head.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/admin/user_view.dart';
+import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
+import 'package:provider/provider.dart';
 
 class User extends StatefulWidget {
   const User({super.key});
@@ -15,9 +16,9 @@ class User extends StatefulWidget {
 class _UserState extends State<User> {
   FirebaseAuthHelper authHelper = FirebaseAuthHelper();
 
-  Future<void> deleteUser(String uid) async {
+  Future<void> deleteUser(String storeId, String uid) async {
     try {
-      await authHelper.deleteUser(uid);
+      await authHelper.deleteUser(storeId, uid);
       // await getUserList();
       if (context.mounted) {
         Utils().toastor(context, 'Successfully deleted');
@@ -32,8 +33,13 @@ class _UserState extends State<User> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+
+    UserModel currentUser = userProvider.getUser!;
+
     return FutureBuilder(
-        future: authHelper.listUsers(),
+        future: authHelper.listUsers(currentUser.storeId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -183,6 +189,7 @@ class _UserState extends State<User> {
                                                                         onPressed:
                                                                             () {
                                                                           deleteUser(
+                                                                              currentUser.storeId,
                                                                               user.uid);
                                                                         },
                                                                         child: const Text(
