@@ -7,7 +7,7 @@ import 'package:hmrodokan/pages/admin/sales.dart';
 import 'package:hmrodokan/pages/admin/user.dart';
 import 'package:hmrodokan/pages/admin/inventory.dart';
 import 'package:hmrodokan/pages/admin/user_create.dart';
-import 'package:hmrodokan/provider/user.dart';
+import 'package:hmrodokan/provider/admin.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -21,15 +21,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  int _currentIndex = 0;
   FirebaseAuthHelper authHelper = FirebaseAuthHelper();
-
-  void handleTap(int index) {
-    // change the _currentIndex
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   // list of pages to navigate
   final List _widgets = [
@@ -42,11 +34,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    AdminProvider adminProvider =
+        Provider.of<AdminProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.white,
         title: Text(
-          '${_widgets[_currentIndex]["title"]}',
+          '${_widgets[adminProvider.getCurrentIndex]["title"]}',
         ),
         backgroundColor: Colors.green,
         actions: [
@@ -55,13 +49,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 try {
                   await authHelper.signOut();
                 } catch (e) {
-                  Utils().toastor(context, e.toString());
+                  if (context.mounted) Utils().toastor(context, e.toString());
                 }
               },
               icon: const Icon(Icons.logout)),
         ],
       ),
-      body: _widgets[_currentIndex]["widget"],
+      body: _widgets[adminProvider.getCurrentIndex]["widget"],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
@@ -76,12 +70,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
             label: 'Sales',
           ),
         ],
-        currentIndex: _currentIndex,
+        currentIndex: adminProvider.getCurrentIndex,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
-        onTap: handleTap,
+        onTap: (int index) {
+          adminProvider.setCurrentIndex = index;
+        },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
         onPressed: () {
           showModalBottomSheet(
               context: context,
@@ -122,7 +120,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 );
               });
         },
-        child: const Icon(Icons.add_circle),
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

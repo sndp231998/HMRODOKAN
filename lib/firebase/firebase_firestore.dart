@@ -68,7 +68,7 @@ class FirebaseFirestoreHelper {
 
   // -------------------------------------------------------------------------
   // Product
-  // save Products
+  // save Products @grab code
   Future<void> createNewProducts(
     String title,
     String storeId,
@@ -77,6 +77,7 @@ class FirebaseFirestoreHelper {
     double purchasePrice,
     double sellingPrice,
     String imageUrl,
+    String code,
   ) async {
     var randomId = _uuid.v4();
     ProductModel productModel = ProductModel(
@@ -88,6 +89,7 @@ class FirebaseFirestoreHelper {
       quantity: quantity,
       purchasePrice: purchasePrice,
       sellingPrice: sellingPrice,
+      scannerCode: code,
     );
     await _firebaseFirestore
         .collection('Products')
@@ -96,10 +98,20 @@ class FirebaseFirestoreHelper {
   }
 
   // list Products
-  Future<List<ProductModel>> listProducts() async {
+  Future<List<ProductModel>> listProducts(String filterValue) async {
     List<ProductModel> productList = [];
 
-    await _firebaseFirestore.collection('Products').get().then((querySnapshot) {
+    final queryRef;
+
+    if (filterValue.isEmpty) {
+      queryRef = _firebaseFirestore.collection('Products');
+    } else {
+      queryRef = _firebaseFirestore
+          .collection('Products')
+          .where('categoryId', isEqualTo: filterValue);
+    }
+
+    await queryRef.get().then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {
         String uid = docSnapshot.get('uid');
         String title = docSnapshot.get('title');
@@ -109,6 +121,7 @@ class FirebaseFirestoreHelper {
         int quantity = docSnapshot.get('quantity');
         double sellingPrice = docSnapshot.get('sellingPrice');
         double purchasePrice = docSnapshot.get('purchasePrice');
+        String scannerCode = docSnapshot.get('scannerCode');
 
         ProductModel product = ProductModel(
           uid: uid,
@@ -119,6 +132,7 @@ class FirebaseFirestoreHelper {
           quantity: quantity,
           purchasePrice: purchasePrice,
           sellingPrice: sellingPrice,
+          scannerCode: scannerCode,
         );
 
         productList.add(product);
@@ -127,7 +141,7 @@ class FirebaseFirestoreHelper {
     return productList;
   }
 
-  // edit Products
+  // edit Products @grab code
   Future<void> editProducts(ProductModel product) async {
     await _firebaseFirestore.collection('Products').doc(product.uid).update({
       'title': product.title,
@@ -141,6 +155,45 @@ class FirebaseFirestoreHelper {
 
   // delete Products
   Future<void> deleteProducts(ProductModel product) async {
-    await _firebaseFirestore.collection('categories').doc(product.uid).delete();
+    await _firebaseFirestore.collection('Products').doc(product.uid).delete();
+  }
+
+  // get number of products sold and total Sales
+  Future<Map<String, int>> getSalesWithProducts(String storeId) async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('sales')
+          .where('storeId', isEqualTo: storeId)
+          .get();
+
+      int totalProductsSold = querySnapshot.size;
+      int totalSales = 0;
+
+      for (var doc in querySnapshot.docs) {
+        int totalBill = doc['paidAmount'] ?? 0;
+        totalSales += totalBill;
+      }
+
+      return {'totalProductsSold': totalProductsSold, 'totalSales': totalSales};
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  // get out of stock products
+  Future<int> getOutOfStock(String storeId) async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('Products')
+          .where('storeId', isEqualTo: storeId)
+          .get();
+      int count = 0;
+      for (var doc in querySnapshot.docs) {
+        count += doc['quantity'] == 0 ? 1 : 0;
+      }
+      return count;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }

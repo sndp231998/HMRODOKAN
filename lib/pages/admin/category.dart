@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/components/category_card.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/model/category.dart';
-import 'package:hmrodokan/utils.dart';
+import 'package:hmrodokan/provider/products.dart';
+import 'package:provider/provider.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
@@ -12,38 +13,44 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-  List<CategoryModel> _categories = [];
-
-  Future<void> getCategoryList() async {
-    FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
-    List<CategoryModel> categoryList =
-        await firebaseFirestoreHelper.listCategories();
-    setState(() {
-      _categories = categoryList;
-    });
-  }
+  FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
 
   @override
   void initState() {
     super.initState();
 
-    getCategoryList();
+    resetProductFilter();
+  }
+
+  void resetProductFilter() {
+    ProductsProvider productsProvider =
+        Provider.of<ProductsProvider>(context, listen: false);
+    productsProvider.setFilterValue = '';
   }
 
   @override
   Widget build(BuildContext context) {
-    return _categories.isNotEmpty
-        ? Container(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.count(crossAxisCount: 2, children: [
-              for (CategoryModel category in _categories)
-                CategoryCard(
-                  category: category,
-                ),
-            ]),
-          )
-        : (const Center(
-            child: Text('Add some categories to view here'),
-          ));
+    return FutureBuilder(
+        future: firebaseFirestoreHelper.listCategories(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return snapshot.data!.isNotEmpty
+              ? Container(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.count(crossAxisCount: 2, children: [
+                    for (CategoryModel category in snapshot.data!)
+                      CategoryCard(
+                        category: category,
+                      ),
+                  ]),
+                )
+              : (const Center(
+                  child: Text('Add some categories to view here'),
+                ));
+        });
   }
 }

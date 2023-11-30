@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/pages/login.dart';
+import 'package:hmrodokan/utils.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -25,8 +27,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return false;
   }
 
-  void _validateAndSubmit() {
-    if (_validateAndSave()) {}
+  Future<void> _validateAndSubmit() async {
+    if (_validateAndSave()) {
+      FirebaseAuthHelper firebaseAuthHelper = FirebaseAuthHelper();
+      try {
+        await firebaseAuthHelper.sendPasswordReset(emailController.text);
+        if (context.mounted) {
+          Utils().toastor(context, 'Password Reset sent to given email');
+        }
+      } catch (e) {
+        if (context.mounted) Utils().toastor(context, e.toString());
+      }
+    }
   }
 
   @override

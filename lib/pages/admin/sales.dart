@@ -8,29 +8,34 @@ class Sales extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(10.0),
       child: Column(
         children: [
-          // table
-
-          Table(
-            children: const [
-              TableRow(children: [
-                TableHead(tableData: 'Sales ID'),
-                TableHead(tableData: 'Product'),
-                TableHead(tableData: 'Sold Date'),
-                TableHead(tableData: 'Payment Type'),
-                TableHead(tableData: 'Counter ID'),
-              ]),
-              TableRow(children: [
-                TableBody(tableData: '50123'),
-                TableBody(tableData: 'Samayang Noodles'),
-                TableBody(tableData: '2023/01/12'),
-                TableBody(tableData: 'Cash'),
-                TableBody(tableData: '10234'),
-              ])
-            ],
-          )
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+                headingRowColor: const MaterialStatePropertyAll(Colors.black12),
+                columns: const [
+                  DataColumn(label: Text('Product')),
+                  DataColumn(label: Text('Sold Date')),
+                  DataColumn(label: Text('Payment')),
+                  DataColumn(label: Text('Counter ID')),
+                ],
+                rows: const [
+                  DataRow(cells: [
+                    DataCell(Text('Samayang Noodles')),
+                    DataCell(Text('2023/01/12')),
+                    DataCell(Text('Cash')),
+                    DataCell(Text('10234')),
+                  ]),
+                  DataRow(cells: [
+                    DataCell(Text('Samayang Noodles')),
+                    DataCell(Text('2023/01/12')),
+                    DataCell(Text('Cash')),
+                    DataCell(Text('10234')),
+                  ]),
+                ]),
+          ),
         ],
       ),
     );

@@ -105,11 +105,11 @@ class FirebaseAuthHelper {
   }
 
   // edit users
-  Future<void> editUser(String uid, UserModel user) async {
+  Future<void> editUser(UserModel user) async {
     try {
       await _firebaseFirestore
           .collection('users')
-          .doc(uid)
+          .doc(user.uid)
           .update(user.toMap());
     } catch (e) {
       throw Exception(e);
@@ -129,6 +129,29 @@ class FirebaseAuthHelper {
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  // send password reset email
+  Future<void> sendPasswordReset(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+// get number of counters
+  Future<int> getNoCounters() async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('users')
+          .where('role', isEqualTo: 'counter')
+          .get();
+
+      return querySnapshot.size;
     } catch (e) {
       throw Exception(e);
     }

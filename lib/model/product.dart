@@ -9,17 +9,18 @@ class ProductModel {
   final int quantity;
   final double purchasePrice;
   final double sellingPrice;
+  final String scannerCode;
 
-  ProductModel({
-    required this.uid,
-    required this.title,
-    required this.storeId,
-    required this.categoryId,
-    required this.imageUrl,
-    required this.quantity,
-    required this.purchasePrice,
-    required this.sellingPrice,
-  });
+  ProductModel(
+      {required this.uid,
+      required this.title,
+      required this.storeId,
+      required this.categoryId,
+      required this.imageUrl,
+      required this.quantity,
+      required this.purchasePrice,
+      required this.sellingPrice,
+      required this.scannerCode});
 
   factory ProductModel.fromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
@@ -31,7 +32,8 @@ class ProductModel {
         imageUrl: data['imageUrl'],
         quantity: data['quantity'],
         purchasePrice: data['purchasePrice'],
-        sellingPrice: data['sellingPrice']);
+        sellingPrice: data['sellingPrice'],
+        scannerCode: data['scannerCode']);
   }
 
   Map<String, dynamic> toMap() {
@@ -44,6 +46,7 @@ class ProductModel {
       'quantity': quantity,
       'purchasePrice': purchasePrice,
       'sellingPrice': sellingPrice,
+      'scannerCode': scannerCode,
     };
   }
 
@@ -57,6 +60,7 @@ class ProductModel {
         imageUrl: snapshot['imageUrl'],
         quantity: snapshot['quantity'],
         purchasePrice: snapshot['purchasePrice'],
-        sellingPrice: snapshot['sellingPrice']);
+        sellingPrice: snapshot['sellingPrice'],
+        scannerCode: snapshot['scannerCode']);
   }
 }

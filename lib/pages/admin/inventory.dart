@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/components/admin_product.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/model/product.dart';
-import 'package:hmrodokan/utils.dart';
+import 'package:hmrodokan/provider/products.dart';
+import 'package:provider/provider.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
@@ -12,37 +13,35 @@ class InventoryPage extends StatefulWidget {
 }
 
 class _InventoryPageState extends State<InventoryPage> {
-  List<ProductModel> _products = [];
-
-  Future<void> getProductsList() async {
-    FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
-    List<ProductModel> productList =
-        await firebaseFirestoreHelper.listProducts();
-    setState(() {
-      _products = productList;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    getProductsList();
-  }
+  FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
 
   @override
   Widget build(BuildContext context) {
-    return _products.isNotEmpty
-        ? SingleChildScrollView(
-            child: Column(
-              children: [
-                for (ProductModel products in _products)
-                  AdminProduct(products: products),
-              ],
-            ),
-          )
-        : const Center(
-            child: Text('Add Products to view'),
-          );
+    ProductsProvider productsProvider =
+        Provider.of<ProductsProvider>(context, listen: false);
+    return FutureBuilder(
+        // make another changes here to filter out products
+        future: firebaseFirestoreHelper
+            .listProducts(productsProvider.getFilterValue),
+        builder: ((context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return snapshot.data!.isNotEmpty
+              ? SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      for (ProductModel products in snapshot.data!)
+                        AdminProduct(products: products),
+                    ],
+                  ),
+                )
+              : const Center(
+                  child: Text('Add Products to view'),
+                );
+        }));
   }
 }

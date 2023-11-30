@@ -6,6 +6,8 @@ import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/counter/history.dart';
 import 'package:hmrodokan/pages/counter/invoice.dart';
 import 'package:hmrodokan/prefs.dart';
+import 'package:hmrodokan/provider/admin.dart';
+import 'package:hmrodokan/provider/products.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/services/auth.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +27,8 @@ void main() async {
       providers: [
         // Use ChangeNotifierProvider.value to provide an existing instance
         ChangeNotifierProvider.value(value: userProvider),
+        ChangeNotifierProvider.value(value: ProductsProvider()),
+        ChangeNotifierProvider.value(value: AdminProvider()),
       ],
       child: const MyApp(),
     ),

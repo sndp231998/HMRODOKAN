@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:hmrodokan/components/bar_qr_scanner.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
+import 'package:hmrodokan/firebase/firebase_storage.dart';
 import 'package:hmrodokan/model/category.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/services/image_helper.dart';
@@ -36,7 +37,6 @@ class AddItemPageState extends State<AddItemPage> {
   final _purchasePriceController = TextEditingController();
   final _mrpController = TextEditingController();
   final _taxController = TextEditingController();
-  final _barcodeController = TextEditingController();
   final _imageUrlController = TextEditingController();
 
   @override
@@ -71,9 +71,19 @@ class AddItemPageState extends State<AddItemPage> {
     int quantityText = int.parse(_quantityController.text);
     double purchaseText = double.parse(_purchasePriceController.text);
     double sellingText = double.parse(_priceController.text);
+    String imageUrl = _imageUrlController.text;
 
     try {
-      if (titleText.isNotEmpty) {
+      if (titleText.isNotEmpty &&
+          (imageUrl.isNotEmpty || _image != null) &&
+          _barqrRes.isNotEmpty) {
+        // store images if image is uploaded
+        if (_image != null) {
+          FirebaseStorageHelper firebaseStorageHelper = FirebaseStorageHelper();
+          imageUrl =
+              await firebaseStorageHelper.uploadImage(_image!, 'products');
+        }
+
         await firebaseFirestoreHelper.createNewProducts(
             titleText,
             userProvider.getUser!.storeId,
@@ -81,11 +91,15 @@ class AddItemPageState extends State<AddItemPage> {
             quantityText,
             purchaseText,
             sellingText,
-            '');
+            imageUrl,
+            _barqrRes);
         _productNameController.text = '';
         _quantityController.text = '';
         _purchasePriceController.text = '';
         _priceController.text = '';
+        _imageUrlController.text = '';
+        _image = null;
+        _barqrRes = '';
 
         if (context.mounted) {
           Utils().toastor(context, 'Products added Successfully.');
@@ -141,7 +155,6 @@ class AddItemPageState extends State<AddItemPage> {
     _purchasePriceController.dispose();
     _mrpController.dispose();
     _taxController.dispose();
-    _barcodeController.dispose();
   }
 
   @override
@@ -236,12 +249,7 @@ class AddItemPageState extends State<AddItemPage> {
                         return null;
                       },
                     ),
-                    TextFormField(
-                      controller: _barcodeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Barcode',
-                      ),
-                    ),
+                    const Text('Barcode'),
                     IconButton(
                       icon: const Icon(Icons.qr_code_scanner),
                       onPressed: () {
@@ -279,6 +287,13 @@ class AddItemPageState extends State<AddItemPage> {
                             });
                       },
                     ),
+                    TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _barqrRes = Utils().generateRandomString();
+                          });
+                        },
+                        child: const Text('Generate Code')),
                     DropdownButton(
                         hint: const Text('Choose Category'),
                         value: dropDownCategory.isNotEmpty

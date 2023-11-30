@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/model/product.dart';
+import 'package:hmrodokan/pages/admin/product_view.dart';
+import 'package:hmrodokan/utils.dart';
 
 class AdminProduct extends StatelessWidget {
   final ProductModel products;
-  const AdminProduct({super.key, required this.products});
+  AdminProduct({super.key, required this.products});
+  final FirebaseFirestoreHelper firebaseFirestoreHelper =
+      FirebaseFirestoreHelper();
+
+  Future<void> handleDelete(BuildContext context) async {
+    try {
+      await firebaseFirestoreHelper.deleteProducts(products);
+      if (context.mounted) Utils().toastor(context, 'Successfully removed');
+    } catch (e) {
+      if (context.mounted) Utils().toastor(context, e.toString());
+    }
+    if (context.mounted) Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,25 +64,45 @@ class AdminProduct extends StatelessWidget {
           // more actions
           PopupMenuButton(itemBuilder: (context) {
             return [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'View',
                 child: ListTile(
-                  leading: Icon(Icons.link),
-                  title: Text('View'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: ((context) => ProductView(
+                              product: products,
+                              isEditing: false,
+                            ))));
+                  },
+                  leading: const Icon(Icons.link),
+                  title: const Text('View'),
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'Edit',
                 child: ListTile(
-                  leading: Icon(Icons.edit),
-                  title: Text('Edit'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: ((context) => ProductView(
+                              isEditing: true,
+                              product: products,
+                            ))));
+                  },
+                  leading: const Icon(Icons.edit),
+                  title: const Text('Edit'),
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'Delete',
                 child: ListTile(
-                  leading: Icon(Icons.delete),
-                  title: Text('Delete'),
+                  onTap: () {
+                    _showDialog(context);
+                  },
+                  leading: const Icon(Icons.delete),
+                  title: const Text('Delete'),
                 ),
               ),
             ];
@@ -75,5 +110,29 @@ class AdminProduct extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _showDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Delete the product'),
+            content: const Text('Are you sure to remove the product'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    // call the delete method
+                    handleDelete(context);
+                  },
+                  child: const Text('Yes')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel')),
+            ],
+          );
+        });
   }
 }
