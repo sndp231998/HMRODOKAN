@@ -152,7 +152,6 @@ class FirebaseAuthHelper {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('users')
-          .where('role', isEqualTo: 'counter')
           .where('storeId', isEqualTo: storeId)
           .get();
 

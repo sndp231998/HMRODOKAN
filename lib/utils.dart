@@ -11,7 +11,8 @@ class Utils {
 
   // random Number generator
   String generateRandomString({int length = 10}) {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    // const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const chars = '0123456789';
     final random = Random();
     return String.fromCharCodes(
       List.generate(
@@ -21,5 +22,10 @@ class Utils {
         ),
       ),
     );
+  }
+
+  String capitalizeFirstLetter(String input) {
+    if (input.isEmpty) return input;
+    return input[0].toUpperCase() + input.substring(1);
   }
 }

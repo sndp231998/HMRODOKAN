@@ -223,32 +223,35 @@ class AddItemPageState extends State<AddItemPage> {
                         return null;
                       },
                     ),
-                    TextFormField(
-                      controller: _mrpController,
-                      decoration: const InputDecoration(
-                        labelText: 'MRP',
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an MRP.';
-                        }
-                        return null;
-                      },
+                    const SizedBox(
+                      height: 10,
                     ),
-                    TextFormField(
-                      controller: _taxController,
-                      decoration: const InputDecoration(
-                        labelText: 'Tax (%)',
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a tax percentage.';
-                        }
-                        return null;
-                      },
-                    ),
+                    // TextFormField(
+                    //   controller: _mrpController,
+                    //   decoration: const InputDecoration(
+                    //     labelText: 'MRP',
+                    //   ),
+                    //   keyboardType: TextInputType.number,
+                    //   validator: (value) {
+                    //     if (value == null || value.isEmpty) {
+                    //       return 'Please enter an MRP.';
+                    //     }
+                    //     return null;
+                    //   },
+                    // ),
+                    // TextFormField(
+                    //   controller: _taxController,
+                    //   decoration: const InputDecoration(
+                    //     labelText: 'Tax (%)',
+                    //   ),
+                    //   keyboardType: TextInputType.number,
+                    //   validator: (value) {
+                    //     if (value == null || value.isEmpty) {
+                    //       return 'Please enter a tax percentage.';
+                    //     }
+                    //     return null;
+                    //   },
+                    // ),
                     const Text('Barcode'),
                     IconButton(
                       icon: const Icon(Icons.qr_code_scanner),
@@ -287,6 +290,7 @@ class AddItemPageState extends State<AddItemPage> {
                             });
                       },
                     ),
+                    Text(_barqrRes),
                     TextButton(
                         onPressed: () {
                           setState(() {

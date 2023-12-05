@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:hmrodokan/components/bar_qr_scanner.dart';
+import 'package:hmrodokan/components/inventory_card.dart';
 import 'package:hmrodokan/components/products_card.dart';
+import 'package:hmrodokan/firebase/firebase_firestore.dart';
+import 'package:hmrodokan/model/bill.dart';
+import 'package:hmrodokan/model/product.dart';
 import 'package:hmrodokan/pages/counter/counter_dashboard.dart';
 import 'package:hmrodokan/pages/counter/invoice.dart';
+import 'package:hmrodokan/provider/bill.dart';
+import 'package:hmrodokan/provider/user.dart';
+import 'package:hmrodokan/utils.dart';
+import 'package:provider/provider.dart';
 
 class CreateBill extends StatefulWidget {
   const CreateBill({super.key});
@@ -12,8 +20,20 @@ class CreateBill extends StatefulWidget {
   State<CreateBill> createState() => _CreateBillState();
 }
 
+TextStyle headerText = const TextStyle(
+  fontSize: 21,
+  fontWeight: FontWeight.bold,
+);
+
+TextStyle highlightedText = const TextStyle(
+  fontWeight: FontWeight.bold,
+);
+
 class _CreateBillState extends State<CreateBill> {
-  late final searchController;
+  FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
+  late final SearchController searchController;
+
+  late BillModel billData;
 
   final List _paymentItems = [
     'Cash',
@@ -26,9 +46,8 @@ class _CreateBillState extends State<CreateBill> {
 
   @override
   void initState() {
-    searchController = TextEditingController();
+    searchController = SearchController();
     super.initState();
-    searchController.addListener(_handleSearchText);
   }
 
   @override
@@ -37,16 +56,21 @@ class _CreateBillState extends State<CreateBill> {
     super.dispose();
   }
 
-  void _handleSearchText() {
-    final text = searchController.text;
+  // void _handleSearchText() {
+  //   final text = searchController.text;
 
-    if (text != '') {
-      // search for items
-    }
-  }
+  //   if (text != '') {
+  //     // search for items
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
+    BillProvider billProvider =
+        Provider.of<BillProvider>(context, listen: true);
+
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: [
@@ -56,7 +80,7 @@ class _CreateBillState extends State<CreateBill> {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: 80,
-                padding: const EdgeInsets.only(top: 15.0),
+                padding: const EdgeInsets.only(top: 20.0),
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     border: Border(
@@ -72,28 +96,39 @@ class _CreateBillState extends State<CreateBill> {
                         icon: const Icon(Icons.arrow_back)),
                     // Search Input
                     Expanded(
-                        child: SearchAnchor.bar(
-                            viewBackgroundColor: Colors.white,
-                            barBackgroundColor:
-                                const MaterialStatePropertyAll(Colors.white),
-                            suggestionsBuilder: (BuildContext context,
-                                SearchController controller) {
-                              return List<ListTile>.generate(5, (int index) {
-                                final String item = 'item $index';
-                                return ListTile(
-                                  title: Text(item),
-                                  onTap: () {
-                                    setState(() {
-                                      controller.closeView(item);
-                                    });
-                                  },
-                                );
-                              });
-                            })),
+                      child: SearchAnchor.bar(
+                        searchController: searchController,
+                        barHintText: 'Search products',
+                        barElevation: const MaterialStatePropertyAll<double>(0),
+                        viewBackgroundColor: Colors.white,
+                        barBackgroundColor:
+                            const MaterialStatePropertyAll(Colors.white),
+                        suggestionsBuilder: (BuildContext context,
+                            SearchController controller) async {
+                          List<ProductModel> productModel =
+                              await firebaseFirestoreHelper
+                                  .fetchProductSuggestions(controller.text);
+
+                          return List.generate(productModel.length,
+                              (int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                billProvider.addProduct(productModel[index]);
+
+                                Navigator.of(context).pop();
+                              },
+                              child: InventoryCard(
+                                product: productModel[index],
+                              ),
+                            );
+                          });
+                        },
+                      ),
+                    ),
                     // Scanner QR
                     PopupMenuButton(
                         icon: const Icon(Icons.qr_code),
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           ScanMode getScanMode = ScanMode.DEFAULT;
                           if (value == 0) {
                             getScanMode = ScanMode.QR;
@@ -102,11 +137,23 @@ class _CreateBillState extends State<CreateBill> {
                             getScanMode = ScanMode.BARCODE;
                           }
 
-                          setState(() async {
-                            searchController.text =
-                                await BarQRScan.scanBarQrCodeNormal(
-                                    getScanMode);
-                          });
+                          String code =
+                              await BarQRScan.scanBarQrCodeNormal(getScanMode);
+
+                          if (code.isEmpty && context.mounted) {
+                            return Utils().toastor(context,
+                                'Scanner Code not Found for the given item in db');
+                          }
+                          // query to db and add to provider
+                          ProductModel? prod = await firebaseFirestoreHelper
+                              .searchByScanner(code);
+
+                          if (prod == null && context.mounted) {
+                            return Utils().toastor(context,
+                                'Product Not Found in db for given code');
+                          }
+                          // add to provider
+                          billProvider.addProduct(prod!);
                         },
                         itemBuilder: (context) {
                           return const [
@@ -134,13 +181,13 @@ class _CreateBillState extends State<CreateBill> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
-                child: const SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
+                child: SingleChildScrollView(
+                  // physics: AlwaysScrollableScrollPhysics(),
                   scrollDirection: Axis.vertical,
                   child: Column(
                     children: [
-                      ProductsCard(),
-                      ProductsCard(),
+                      for (ProductModel product in billProvider.productList)
+                        ProductsCard(product: product),
                     ],
                   ),
                 ),
@@ -149,25 +196,226 @@ class _CreateBillState extends State<CreateBill> {
           Positioned(
               bottom: 0,
               left: 0,
-              height: 100,
+              // height: 150,
               width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Column(
                 children: [
-                  // payment methods
-                  Expanded(
-                    flex: 1,
+                  SizedBox(
+                    height: 80,
+                    child: Row(
+                      children: [
+                        // create bill
+
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              showOrderInProcess(
+                                  context, billProvider, userProvider);
+                            },
+                            child: Container(
+                              color: Colors.green,
+                              child: const Center(
+                                  child: Text(
+                                'Create Bill',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              )),
+                            ),
+                          ),
+                        ),
+
+                        // total
+                        Expanded(
+                          child: Container(
+                            color: Colors.blueGrey,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Total',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  'Rs. ${billProvider.totalAmount}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ))
+        ],
+      ),
+    );
+  }
+
+  void showOrderInProcess(BuildContext context, BillProvider billProvider,
+      UserProvider userProvider) {
+    String dropDownValue = _paymentItems.first;
+    double discount = 0;
+    double paidAmount = 0;
+    double refundAmount = 0;
+    double totalAmount = billProvider.totalAmount;
+    bool isLoading = false;
+
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return StatefulBuilder(builder: ((context, setState) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              height: MediaQuery.of(context).size.height * .7,
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'Order in Progress',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      // input box
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Discount Amount',
+                                  style: highlightedText,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.6,
+                                  child: TextField(
+                                    onChanged: (String value) {
+                                      setState(() {
+                                        discount = double.parse(value);
+                                      });
+                                    },
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Paid Amount',
+                                  style: highlightedText,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextField(
+                                  onChanged: (String value) {
+                                    setState(() {
+                                      paidAmount = double.parse(value);
+                                      refundAmount =
+                                          paidAmount - discount - totalAmount;
+                                    });
+                                  },
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // amounts
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Total Amount',
+                                      style: highlightedText,
+                                    ),
+                                    Text(
+                                      'Rs. ${totalAmount.toString()}',
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Refund Amount',
+                                      style: highlightedText,
+                                    ),
+                                    Text(
+                                      'Rs. ${refundAmount.toString()}',
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Center(
                     child: Container(
+                      padding: const EdgeInsets.all(5),
                       color: Colors.white,
+                      width: MediaQuery.of(context).size.width * .7,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text('Payment Type'),
                           DropdownButton(
-                              value: 'Cash',
+                              value: dropDownValue,
                               items: _paymentItems.map((item) {
-                                return DropdownMenuItem(
+                                return DropdownMenuItem<String>(
                                     alignment: Alignment.centerLeft,
                                     value: item,
                                     child: Text(
@@ -176,78 +424,119 @@ class _CreateBillState extends State<CreateBill> {
                               }).toList(),
                               onChanged: (value) {
                                 setState(() {
-                                  // change here
+                                  dropDownValue = value!;
                                 });
                               }),
                         ],
                       ),
                     ),
                   ),
-
-                  // create bill
-
-                  Expanded(
-                    flex: 1,
-                    child: GestureDetector(
-                      onTap: () {
-                        showOrderCompletionModal(context);
-                      },
-                      child: Container(
-                        color: Colors.green,
-                        child: const Center(
-                            child: Text(
-                          'Create Bill',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        )),
-                      ),
-                    ),
+                  const SizedBox(
+                    height: 20,
                   ),
-
-                  // total
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      color: Colors.blueGrey,
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Total',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            'Rs. 1000',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                  ElevatedButton(
+                      style: const ButtonStyle(
+                        padding: MaterialStatePropertyAll(
+                            EdgeInsets.symmetric(vertical: 20)),
                       ),
-                    ),
-                  )
+                      onPressed: isLoading
+                          ? null
+                          : () async {
+                              // create bill
+                              setState(
+                                () {
+                                  isLoading = true;
+                                },
+                              );
+                              try {
+                                billData =
+                                    await firebaseFirestoreHelper.createBill(
+                                        userProvider.getUser!.uid,
+                                        userProvider.getUser!.storeId,
+                                        totalAmount,
+                                        discount,
+                                        paidAmount,
+                                        dropDownValue);
+
+                                // billProvider.productList
+                                // grab discount amount
+                                // paid amount
+
+                                for (ProductModel product
+                                    in billProvider.productList) {
+                                  await firebaseFirestoreHelper.createSales(
+                                      billData.uid,
+                                      product.uid,
+                                      product.sellingPrice,
+                                      product.purchasePrice,
+                                      product.title,
+                                      product.quantity);
+                                }
+
+                                billProvider.clearBill();
+                                setState(
+                                  () {
+                                    isLoading = false;
+                                    discount = 0;
+                                    paidAmount = 0;
+                                    refundAmount = 0;
+                                  },
+                                );
+
+                                if (context.mounted) {
+                                  Utils().toastor(
+                                      context, 'Bill Creation Successful');
+
+                                  // Delay for a short duration before showing the completion modal
+                                  await Future.delayed(
+                                      const Duration(seconds: 2));
+
+                                  if (context.mounted) {
+                                    showOrderCompletionModal(context);
+                                  }
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  Utils().toastor(context, e.toString());
+                                  Navigator.of(context).pop();
+                                }
+                              }
+
+                              billProvider.clearBill();
+                              setState(
+                                () {
+                                  isLoading = false;
+                                  discount = 0;
+                                  paidAmount = 0;
+                                  refundAmount = 0;
+                                },
+                              );
+                            },
+                      child: isLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : const Text(
+                              'Create Bill',
+                              style: TextStyle(fontSize: 18),
+                            )),
                 ],
-              ))
-        ],
-      ),
-    );
+              ),
+            );
+          }));
+        });
   }
 
   void showOrderCompletionModal(BuildContext context) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true, // Set to true for centering on the screen
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Container(
+      builder: (context) {
+        return AlertDialog(
+          content: Container(
+            height: MediaQuery.of(context).size.height * .5,
             padding: const EdgeInsets.all(16),
+            color: Colors.white,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Icon(Icons.check_circle),
@@ -268,12 +557,11 @@ class _CreateBillState extends State<CreateBill> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        // Perform the print action
-                        // Add your print logic here
+                        // get the bill id;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Invoice()));
+                                builder: (context) => Invoice(bill: billData)));
                       },
                       child: const Text('Print'),
                     ),
@@ -303,6 +591,9 @@ class _CreateBillState extends State<CreateBill> {
                     },
                     child: const Text('Go to Home'),
                   ),
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 IntrinsicWidth(
                   child: ElevatedButton(

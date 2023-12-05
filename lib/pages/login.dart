@@ -46,7 +46,7 @@ class _LoginState extends State<Login> {
     try {
       await authHelper.loginUser(email, password);
       getCurrentUserDetails(userProvider);
-      if (context.mounted) Utils().toastor(context, 'Logging In');
+      if (context.mounted) Utils().toastor(context, 'Successfully Logged In');
     } catch (e) {
       if (context.mounted) Utils().toastor(context, e.toString());
     }
@@ -54,16 +54,11 @@ class _LoginState extends State<Login> {
 
   Future<void> getCurrentUserDetails(UserProvider userProvider) async {
     FirebaseAuthHelper authHelper = FirebaseAuthHelper();
-    String userData = await Prefs.getUser();
-    if (userData.isNotEmpty) {
-      userProvider.setUser = UserModel.fromJson(userData);
-    } else {
-      UserModel? user = await authHelper.getUserInstance();
 
-      if (user != null) {
-        await Prefs.setUser(user.toJson());
-        userProvider.setUser = user;
-      }
+    UserModel? user = await authHelper.getUserInstance();
+
+    if (user != null) {
+      userProvider.setUser = user;
     }
   }
 
@@ -92,66 +87,66 @@ class _LoginState extends State<Login> {
                 const SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (currentRole != 'admin') {
-                            toggleRole('admin');
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration:
-                              currentRole == 'admin' ? activeUserBorder : null,
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                'assets/images/admin.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              const Text(
-                                'Admin',
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      GestureDetector(
-                        onTap: () {
-                          if (currentRole != 'counter') {
-                            toggleRole('counter');
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: currentRole == 'counter'
-                              ? activeUserBorder
-                              : null,
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                'assets/images/counter.png',
-                                height: 50,
-                                width: 50,
-                              ),
-                              const Text(
-                                'Counter',
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // SizedBox(
+                //   width: MediaQuery.of(context).size.width * 0.5,
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     children: [
+                //       GestureDetector(
+                //         onTap: () {
+                //           if (currentRole != 'admin') {
+                //             toggleRole('admin');
+                //           }
+                //         },
+                //         child: Container(
+                //           padding: const EdgeInsets.all(8),
+                //           decoration:
+                //               currentRole == 'admin' ? activeUserBorder : null,
+                //           child: Column(
+                //             children: [
+                //               Image.asset(
+                //                 'assets/images/admin.png',
+                //                 height: 50,
+                //                 width: 50,
+                //               ),
+                //               const Text(
+                //                 'Admin',
+                //                 style: TextStyle(fontWeight: FontWeight.w500),
+                //               )
+                //             ],
+                //           ),
+                //         ),
+                //       ),
+                //       const SizedBox(width: 20),
+                //       GestureDetector(
+                //         onTap: () {
+                //           if (currentRole != 'counter') {
+                //             toggleRole('counter');
+                //           }
+                //         },
+                //         child: Container(
+                //           padding: const EdgeInsets.all(8),
+                //           decoration: currentRole == 'counter'
+                //               ? activeUserBorder
+                //               : null,
+                //           child: Column(
+                //             children: [
+                //               Image.asset(
+                //                 'assets/images/counter.png',
+                //                 height: 50,
+                //                 width: 50,
+                //               ),
+                //               const Text(
+                //                 'Counter',
+                //                 style: TextStyle(fontWeight: FontWeight.w500),
+                //               )
+                //             ],
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
 
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -176,17 +171,17 @@ class _LoginState extends State<Login> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: false, // Set the initial value accordingly
-                          onChanged: (value) {
-                            // Handle checkbox state change here
-                          },
-                        ),
-                        const Text("Remember me"),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Checkbox(
+                    //       value: false, // Set the initial value accordingly
+                    //       onChanged: (value) {
+                    //         // Handle checkbox state change here
+                    //       },
+                    //     ),
+                    //     const Text("Remember me"),
+                    //   ],
+                    // ),
                     TextButton(
                       onPressed: () {
                         Navigator.push(

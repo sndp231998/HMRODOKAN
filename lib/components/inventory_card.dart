@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/model/product.dart';
 
 class InventoryCard extends StatelessWidget {
-  const InventoryCard({super.key});
+  final ProductModel product;
+  const InventoryCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +21,8 @@ class InventoryCard extends StatelessWidget {
         children: [
           // image
           Center(
-            child: Image.asset(
-              'assets/images/samayang.jpeg',
+            child: Image.network(
+              product.imageUrl,
               height: 50,
               width: 30,
             ),
@@ -29,21 +31,21 @@ class InventoryCard extends StatelessWidget {
           const SizedBox(
             width: 20,
           ),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Name of the Product goes here',
-                  style: TextStyle(
+                  product.title,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
                   ),
                 ),
                 Text(
-                  'Quantity. 1100pc',
+                  'Quantity. ${product.quantity}pc',
                   textAlign: TextAlign.start,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black54,
                   ),
                 ),

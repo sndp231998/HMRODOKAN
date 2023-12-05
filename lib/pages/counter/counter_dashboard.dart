@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/pages/counter/create_bill.dart';
 import 'package:hmrodokan/pages/counter/history.dart';
-import 'package:hmrodokan/pages/counter/inventory.dart';
-import 'package:hmrodokan/provider/user.dart';
+// import 'package:hmrodokan/pages/counter/inventory.dart';
 import 'package:hmrodokan/utils.dart';
-import 'package:provider/provider.dart';
 
 class CounterDashboard extends StatefulWidget {
   const CounterDashboard({super.key});
@@ -44,18 +42,18 @@ class _CounterDashboardState extends State<CounterDashboard> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const CreateBill()),
-                          );
-                        },
-                        child: const Column(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CreateBill()),
+                      );
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
@@ -72,16 +70,16 @@ class _CounterDashboardState extends State<CounterDashboard> {
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Icon(
-                        Icons.shop,
-                        size: 50,
-                        color: Colors.white,
-                      ),
-                    ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Icon(
+                          Icons.shop,
+                          size: 50,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -90,8 +88,9 @@ class _CounterDashboardState extends State<CounterDashboard> {
                     try {
                       await authHelper.signOut();
                     } catch (e) {
-                      if (context.mounted)
+                      if (context.mounted) {
                         Utils().toastor(context, e.toString());
+                      }
                     }
                   },
                   child: const Text('Sign Out'))
@@ -107,11 +106,11 @@ class _CounterDashboardState extends State<CounterDashboard> {
           onTap: (value) {
             setState(() {
               _currentIndex = value;
+              // if (_currentIndex == 1) {
+              //   Navigator.push(context,
+              //       MaterialPageRoute(builder: (context) => const Inventory()));
+              // }
               if (_currentIndex == 1) {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Inventory()));
-              }
-              if (_currentIndex == 2) {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const History()));
               }
@@ -119,8 +118,8 @@ class _CounterDashboardState extends State<CounterDashboard> {
           },
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.inventory), label: 'Inventory'),
+            // BottomNavigationBarItem(
+            //     icon: Icon(Icons.inventory), label: 'Inventory'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.history), label: 'History'),
           ]),

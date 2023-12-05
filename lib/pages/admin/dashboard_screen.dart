@@ -21,37 +21,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   final List _analytics = [
     {
-      'icon': const Icon(
-        Icons.point_of_sale_sharp,
+      'icon': Icon(
+        Icons.attach_money,
         size: 50,
-        color: Colors.white,
+        color: Colors.green[800],
       ),
-      'title': 'Sales',
+      'title': 'Total Profit',
       'amount': 'Rs. 22110',
     },
     {
-      'icon': const Icon(
+      'icon': Icon(
+        Icons.point_of_sale_sharp,
+        size: 50,
+        color: Colors.green[800],
+      ),
+      'title': 'Total Sales',
+      'amount': 'Rs. 22110',
+    },
+    {
+      'icon': Icon(
         Icons.inventory,
         size: 50,
-        color: Colors.white,
+        color: Colors.green[800],
       ),
       'title': 'Products Sold',
       'amount': '55',
     },
     {
-      'icon': const Icon(
+      'icon': Icon(
         Icons.category,
         size: 50,
-        color: Colors.white,
+        color: Colors.green[800],
       ),
       'title': 'Out of Stock',
       'amount': '5',
     },
     {
-      'icon': const Icon(
+      'icon': Icon(
         Icons.countertops,
         size: 50,
-        color: Colors.white,
+        color: Colors.green[800],
       ),
       'title': 'Counters',
       'amount': '3',
@@ -66,32 +75,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> loadData() async {
     toggleIsFetching(true);
-    late int totalSales;
+    late double totalSales;
     late int totalProductsSold;
     late int outOfStock;
     late int totalCounters;
+    late double totalProfit;
     try {
       // Get the user parameter from the provider
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
-      String storeId = userProvider.getUser?.storeId ??
-          ''; // Adjust this based on your user model
+      String storeId =
+          userProvider.getUser!.storeId; // Adjust this based on your user model
 
-      Map<String, int> salesWithProducts =
+      Map<String, dynamic> salesWithProducts =
           await firebaseFirestoreHelper.getSalesWithProducts(storeId);
 
-      totalSales = salesWithProducts['totalSales'] ?? 0;
-      totalProductsSold = salesWithProducts['totalProductsSold'] ?? 0;
+      totalProfit = salesWithProducts['totalProfit']!;
+      totalSales = salesWithProducts['totalSales']!;
+      totalProductsSold = salesWithProducts['totalProductsSold']!;
       outOfStock = await firebaseFirestoreHelper.getOutOfStock(storeId);
       totalCounters = await firebaseAuthHelper.getNoCounters(storeId);
 
       setState(() {
         // Update the state to trigger a rebuild with the new data
 
-        _analytics[0]['amount'] = 'Rs. $totalSales';
-        _analytics[1]['amount'] = '$totalProductsSold';
-        _analytics[2]['amount'] = '$outOfStock';
-        _analytics[3]['amount'] = '$totalCounters';
+        _analytics[0]['amount'] = 'Rs. $totalProfit';
+        _analytics[1]['amount'] = 'Rs. $totalSales';
+        _analytics[2]['amount'] = '$totalProductsSold';
+        _analytics[3]['amount'] = '$outOfStock';
+        _analytics[4]['amount'] = '$totalCounters';
       });
     } catch (e) {
       // Handle error

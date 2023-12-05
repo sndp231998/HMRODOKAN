@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hmrodokan/components/inventory_card.dart';
 
 class Inventory extends StatefulWidget {
   const Inventory({super.key});
@@ -84,17 +83,7 @@ class _InventoryState extends State<Inventory> {
             child: const SingleChildScrollView(
               child: Column(
                 children: [
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
-                  InventoryCard(),
+                  // InventoryCard(),
                 ],
               ),
             ),

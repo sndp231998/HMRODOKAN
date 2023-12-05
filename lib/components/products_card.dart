@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/model/product.dart';
+import 'package:hmrodokan/provider/bill.dart';
+import 'package:provider/provider.dart';
 
-class ProductsCard extends StatelessWidget {
-  const ProductsCard({super.key});
+class ProductsCard extends StatefulWidget {
+  final ProductModel product;
+  const ProductsCard({super.key, required this.product});
 
   @override
+  State<ProductsCard> createState() => _ProductsCardState();
+}
+
+class _ProductsCardState extends State<ProductsCard> {
+  @override
   Widget build(BuildContext context) {
+    BillProvider billProvider =
+        Provider.of<BillProvider>(context, listen: true);
+
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration:
@@ -12,45 +24,65 @@ class ProductsCard extends StatelessWidget {
       child: Row(
         children: [
           // image
-          Image.asset(
-            'assets/images/samayang.jpeg',
+          Image.network(
+            widget.product.imageUrl,
             width: 50,
           ),
           // name & quantity
           Expanded(
-            child: Container(
-              // color: Colors.red,
-              child: const Column(
-                children: [
-                  Text('Name of the Product'),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: null,
-                        icon: Icon(Icons.exposure_minus_1),
+            child: Column(
+              children: [
+                Text(
+                  widget.product.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        billProvider.updateQuantity(widget.product, false);
+                      },
+                      icon: const Icon(Icons.arrow_downward),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                      color: Colors.black12,
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        widget.product.quantity.toString(),
+                        style: const TextStyle(fontSize: 16),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text('1'),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                        onPressed: null,
-                        icon: Icon(Icons.plus_one),
-                      ),
-                    ],
-                  )
-                ],
-              ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        billProvider.updateQuantity(widget.product, true);
+                      },
+                      icon: const Icon(Icons.arrow_upward),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Rs. ${widget.product.sellingPrice}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                )
+              ],
             ),
           ),
           // delete
-          const Icon(
-            Icons.delete,
-            color: Colors.red,
+          IconButton(
+            onPressed: () {
+              billProvider.removeProduct(widget.product);
+            },
+            icon: const Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
           ),
         ],
       ),

@@ -3,6 +3,7 @@ import 'package:hmrodokan/components/category_card.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/model/category.dart';
 import 'package:hmrodokan/provider/products.dart';
+import 'package:hmrodokan/utils.dart';
 import 'package:provider/provider.dart';
 
 class Category extends StatefulWidget {
@@ -15,11 +16,35 @@ class Category extends StatefulWidget {
 class _CategoryState extends State<Category> {
   FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
 
+  bool isLoading = true;
+  List<CategoryModel> categoryList = [];
+
   @override
   void initState() {
     super.initState();
-
+    listCategories(context);
     resetProductFilter();
+  }
+
+  Future<void> listCategories(BuildContext context) async {
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+    try {
+      List<CategoryModel> fetchList = [];
+      fetchList = await firebaseFirestoreHelper.listCategories();
+
+      setState(() {
+        categoryList = fetchList;
+      });
+    } catch (e) {
+      if (context.mounted) Utils().toastor(context, e.toString());
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void resetProductFilter() {
@@ -30,27 +55,29 @@ class _CategoryState extends State<Category> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: firebaseFirestoreHelper.listCategories(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return snapshot.data!.isNotEmpty
-              ? Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GridView.count(crossAxisCount: 2, children: [
-                    for (CategoryModel category in snapshot.data!)
-                      CategoryCard(
-                        category: category,
-                      ),
-                  ]),
-                )
-              : (const Center(
-                  child: Text('Add some categories to view here'),
-                ));
-        });
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    return categoryList.isNotEmpty
+        ? RefreshIndicator(
+            onRefresh: () {
+              return listCategories(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: GridView.count(crossAxisCount: 2, children: [
+                for (CategoryModel category in categoryList)
+                  CategoryCard(
+                    category: category,
+                  ),
+              ]),
+            ),
+          )
+        : (const Center(
+            child: Text('Add some categories to view here'),
+          ));
   }
 }

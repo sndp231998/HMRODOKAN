@@ -4,7 +4,6 @@ import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/admin/admin_dashboard.dart';
 import 'package:hmrodokan/pages/counter/counter_dashboard.dart';
 import 'package:hmrodokan/pages/login.dart';
-import 'package:hmrodokan/prefs.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:provider/provider.dart';
 
@@ -23,9 +22,8 @@ class AuthService extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-
-        UserModel? user = userProvider.getUser;
-        if (snapshot.data != null) {
+        if (snapshot.data != null && userProvider.getUser != null) {
+          UserModel? user = userProvider.getUser;
           if (user != null) {
             if (user.role == 'admin') {
               return const AdminDashboard();
@@ -35,7 +33,6 @@ class AuthService extends StatelessWidget {
             }
           }
         }
-        Prefs.clearUser();
         return const Login();
       },
     );

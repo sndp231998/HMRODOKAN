@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/model/user.dart';
 
 class UserProvider extends ChangeNotifier {
-  // Prefs prefs = Prefs();
   UserModel? _user;
 
   set setUser(UserModel user) {
@@ -11,5 +10,5 @@ class UserProvider extends ChangeNotifier {
   }
 
   // getter
-  UserModel? get getUser => _user;
+  UserModel? get getUser => _user!;
 }

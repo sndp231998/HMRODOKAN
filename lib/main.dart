@@ -4,9 +4,9 @@ import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/firebase_options.dart';
 import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/counter/history.dart';
-import 'package:hmrodokan/pages/counter/invoice.dart';
 import 'package:hmrodokan/prefs.dart';
 import 'package:hmrodokan/provider/admin.dart';
+import 'package:hmrodokan/provider/bill.dart';
 import 'package:hmrodokan/provider/products.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/services/auth.dart';
@@ -29,6 +29,7 @@ void main() async {
         ChangeNotifierProvider.value(value: userProvider),
         ChangeNotifierProvider.value(value: ProductsProvider()),
         ChangeNotifierProvider.value(value: AdminProvider()),
+        ChangeNotifierProvider.value(value: BillProvider()),
       ],
       child: const MyApp(),
     ),
@@ -37,16 +38,10 @@ void main() async {
 
 Future<void> getCurrentUserDetails(UserProvider userProvider) async {
   FirebaseAuthHelper authHelper = FirebaseAuthHelper();
-  String userData = await Prefs.getUser();
-  if (userData.isNotEmpty) {
-    userProvider.setUser = UserModel.fromJson(userData);
-  } else {
-    UserModel? user = await authHelper.getUserInstance();
+  UserModel? user = await authHelper.getUserInstance();
 
-    if (user != null) {
-      await Prefs.setUser(user.toJson());
-      userProvider.setUser = user;
-    }
+  if (user != null) {
+    userProvider.setUser = user;
   }
 }
 
@@ -62,7 +57,6 @@ class MyApp extends StatelessWidget {
       ),
       home: const AuthService(),
       routes: {
-        'invoice': (context) => const Invoice(),
         'history': (context) => const History(),
       },
     );

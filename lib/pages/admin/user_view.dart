@@ -249,7 +249,7 @@ class _UserViewState extends State<UserView> {
                         ? const Center(
                             child: CircularProgressIndicator(),
                           )
-                        : const Text('Save'))
+                        : const Text('Save')),
             ],
           ),
         ),

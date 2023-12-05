@@ -17,7 +17,7 @@ class DashboardCard extends StatelessWidget {
       padding: const EdgeInsets.all(5.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.green,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -29,16 +29,17 @@ class DashboardCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                      color: Colors.white,
+                  style: TextStyle(
+                      color: Colors.green[800],
                       fontSize: 12,
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
                   amount,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[500],
+                    fontSize: 20,
                   ),
                 )
               ],

@@ -344,6 +344,9 @@ class _ProductViewState extends State<ProductView> {
                         child: const Text('Generate code'))
                 ],
               ),
+              const SizedBox(
+                height: 15,
+              ),
               if (widget.isEditing)
                 ElevatedButton(
                     onPressed: () {

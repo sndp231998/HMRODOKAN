@@ -6,7 +6,7 @@ class ProductModel {
   final String storeId;
   final String categoryId;
   final String imageUrl;
-  final int quantity;
+  int quantity;
   final double purchasePrice;
   final double sellingPrice;
   final String scannerCode;
