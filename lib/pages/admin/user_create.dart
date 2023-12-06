@@ -36,7 +36,7 @@ class _UserCreateState extends State<UserCreate> {
     toggleIsSaving(true);
 
     String storeId =
-        Provider.of<UserProvider>(context, listen: false).getUser!.storeId;
+        Provider.of<UserProvider>(context, listen: false).getUser.storeId;
     String fullnameText = fullname.text;
     String emailText = email.text;
     String addressText = address.text;

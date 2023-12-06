@@ -24,10 +24,12 @@ class AddItemPageState extends State<AddItemPage> {
   FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
 
   List<CategoryModel> dropDownList = [];
+  List<String> unitList = ['pc', 'kg', 'ltr'];
 
   String _barqrRes = '';
   bool isSaving = false;
   String dropDownCategory = '';
+  String unitValue = 'pc';
 
   File? _image;
 
@@ -35,7 +37,6 @@ class AddItemPageState extends State<AddItemPage> {
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
   final _purchasePriceController = TextEditingController();
-  final _mrpController = TextEditingController();
   final _taxController = TextEditingController();
   final _imageUrlController = TextEditingController();
 
@@ -68,13 +69,14 @@ class AddItemPageState extends State<AddItemPage> {
         Provider.of<UserProvider>(context, listen: false);
 
     String titleText = _productNameController.text;
-    int quantityText = int.parse(_quantityController.text);
+    String unitText = unitValue;
+    double quantityText = double.parse(_quantityController.text);
     double purchaseText = double.parse(_purchasePriceController.text);
     double sellingText = double.parse(_priceController.text);
     String imageUrl = _imageUrlController.text;
-
     try {
       if (titleText.isNotEmpty &&
+          unitText.isNotEmpty &&
           (imageUrl.isNotEmpty || _image != null) &&
           _barqrRes.isNotEmpty) {
         // store images if image is uploaded
@@ -86,8 +88,9 @@ class AddItemPageState extends State<AddItemPage> {
 
         await firebaseFirestoreHelper.createNewProducts(
             titleText,
-            userProvider.getUser!.storeId,
+            userProvider.getUser.storeId,
             dropDownCategory,
+            unitText,
             quantityText,
             purchaseText,
             sellingText,
@@ -98,6 +101,7 @@ class AddItemPageState extends State<AddItemPage> {
         _purchasePriceController.text = '';
         _priceController.text = '';
         _imageUrlController.text = '';
+        unitValue = 'pc';
         _image = null;
         _barqrRes = '';
 
@@ -120,19 +124,24 @@ class AddItemPageState extends State<AddItemPage> {
           return SimpleDialog(
             children: [
               TextButton(
-                  onPressed: () {
-                    setState(() async {
-                      _image =
-                          await imageHelper.getImageURL(ImageSource.gallery);
+                  onPressed: () async {
+                    File? imageFile =
+                        await imageHelper.getImageURL(ImageSource.gallery);
+                    setState(() {
+                      _image = imageFile;
                     });
+                    if (context.mounted) Navigator.of(context).pop();
                   },
                   child: const Text('Choose from gallery')),
               TextButton(
-                  onPressed: () {
-                    setState(() async {
-                      _image =
-                          await imageHelper.getImageURL(ImageSource.camera);
+                  onPressed: () async {
+                    File? imageFile =
+                        await imageHelper.getImageURL(ImageSource.camera);
+
+                    setState(() {
+                      _image = imageFile;
                     });
+                    if (context.mounted) Navigator.of(context).pop();
                   },
                   child: const Text('Capture new Photo')),
               TextButton(
@@ -153,7 +162,6 @@ class AddItemPageState extends State<AddItemPage> {
     _priceController.dispose();
     _quantityController.dispose();
     _purchasePriceController.dispose();
-    _mrpController.dispose();
     _taxController.dispose();
   }
 
@@ -226,19 +234,23 @@ class AddItemPageState extends State<AddItemPage> {
                     const SizedBox(
                       height: 10,
                     ),
-                    // TextFormField(
-                    //   controller: _mrpController,
-                    //   decoration: const InputDecoration(
-                    //     labelText: 'MRP',
-                    //   ),
-                    //   keyboardType: TextInputType.number,
-                    //   validator: (value) {
-                    //     if (value == null || value.isEmpty) {
-                    //       return 'Please enter an MRP.';
-                    //     }
-                    //     return null;
-                    //   },
-                    // ),
+                    DropdownButton(
+                        hint: const Text('Choose Unit'),
+                        value: unitValue.isNotEmpty ? unitValue : null,
+                        items: unitList.map((value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            unitValue = value!;
+                          });
+                        }),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     // TextFormField(
                     //   controller: _taxController,
                     //   decoration: const InputDecoration(
@@ -324,6 +336,12 @@ class AddItemPageState extends State<AddItemPage> {
                       },
                       icon: const Icon(Icons.add_a_photo),
                     ),
+                    _image == null
+                        ? const Text('No image selected')
+                        : Image(
+                            image: FileImage(_image!),
+                            height: 50,
+                          ),
                     TextField(
                       controller: _imageUrlController,
                       keyboardType: TextInputType.name,

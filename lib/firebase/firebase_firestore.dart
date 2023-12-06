@@ -80,7 +80,8 @@ class FirebaseFirestoreHelper {
     String title,
     String storeId,
     String categoryId,
-    int quantity,
+    String unit,
+    double quantity,
     double purchasePrice,
     double sellingPrice,
     String imageUrl,
@@ -94,6 +95,7 @@ class FirebaseFirestoreHelper {
       storeId: storeId,
       categoryId: categoryId,
       quantity: quantity,
+      unit: unit,
       purchasePrice: purchasePrice,
       sellingPrice: sellingPrice,
       scannerCode: code,
@@ -129,7 +131,8 @@ class FirebaseFirestoreHelper {
         String imageUrl = docSnapshot.get('imageUrl');
         String storeId = docSnapshot.get('storeId');
         String categoryId = docSnapshot.get('categoryId');
-        int quantity = docSnapshot.get('quantity');
+        double quantity = docSnapshot.get('quantity');
+        String unit = docSnapshot.get('unit');
         double sellingPrice = docSnapshot.get('sellingPrice');
         double purchasePrice = docSnapshot.get('purchasePrice');
         String scannerCode = docSnapshot.get('scannerCode');
@@ -141,6 +144,7 @@ class FirebaseFirestoreHelper {
           storeId: storeId,
           categoryId: categoryId,
           quantity: quantity,
+          unit: unit,
           purchasePrice: purchasePrice,
           sellingPrice: sellingPrice,
           scannerCode: scannerCode,
@@ -159,6 +163,7 @@ class FirebaseFirestoreHelper {
       'imageUrl': product.imageUrl,
       'categoryId': product.categoryId,
       'quantity': product.quantity,
+      'unit': product.unit,
       'purchasePrice': product.purchasePrice,
       'sellingPrice': product.sellingPrice,
       'scannerCode': product.scannerCode,
@@ -243,7 +248,8 @@ class FirebaseFirestoreHelper {
         String imageUrl = docSnapshot.get('imageUrl');
         String storeId = docSnapshot.get('storeId');
         String categoryId = docSnapshot.get('categoryId');
-        int quantity = docSnapshot.get('quantity');
+        double quantity = docSnapshot.get('quantity');
+        String unit = docSnapshot.get('unit');
         double sellingPrice = docSnapshot.get('sellingPrice');
         double purchasePrice = docSnapshot.get('purchasePrice');
         String scannerCode = docSnapshot.get('scannerCode');
@@ -254,6 +260,7 @@ class FirebaseFirestoreHelper {
           title: title,
           storeId: storeId,
           categoryId: categoryId,
+          unit: unit,
           quantity: quantity,
           purchasePrice: purchasePrice,
           sellingPrice: sellingPrice,
@@ -409,7 +416,7 @@ class FirebaseFirestoreHelper {
         double soldAt = docSnapshot.get('soldAt');
         String productId = docSnapshot.get('productId');
         String name = docSnapshot.get('name');
-        int quantity = docSnapshot.get('quantity');
+        double quantity = docSnapshot.get('quantity');
         double discount = docSnapshot.get('discount');
         double purchaseAt = docSnapshot.get('purchaseAt');
 
@@ -457,7 +464,7 @@ class FirebaseFirestoreHelper {
           double soldAt = docSnapshot.get('soldAt');
           String productId = docSnapshot.get('productId');
           String name = docSnapshot.get('name');
-          int quantity = docSnapshot.get('quantity');
+          double quantity = docSnapshot.get('quantity');
           double discount = docSnapshot.get('discount');
           double purchaseAt = docSnapshot.get('purchaseAt');
 
@@ -481,7 +488,7 @@ class FirebaseFirestoreHelper {
 
   // create sales
   Future<void> createSales(String billId, String productId, double soldAt,
-      double purchaseAt, String name, int quantity) async {
+      double purchaseAt, String name, double quantity) async {
     var uid = _uuid.v4();
     uid = uid.toString();
     SalesModel sales = SalesModel(

@@ -85,7 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
       String storeId =
-          userProvider.getUser!.storeId; // Adjust this based on your user model
+          userProvider.getUser.storeId; // Adjust this based on your user model
 
       Map<String, dynamic> salesWithProducts =
           await firebaseFirestoreHelper.getSalesWithProducts(storeId);
@@ -116,6 +116,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     loadData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

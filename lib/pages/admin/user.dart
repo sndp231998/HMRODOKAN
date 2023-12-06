@@ -30,7 +30,7 @@ class _UserState extends State<User> {
 
     try {
       List<UserModel> fetchList = [];
-      fetchList = await authHelper.listUsers(userProvider.getUser!.storeId);
+      fetchList = await authHelper.listUsers(userProvider.getUser.storeId);
       setState(() {
         userList = fetchList;
       });
@@ -67,7 +67,7 @@ class _UserState extends State<User> {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
 
-    UserModel currentUser = userProvider.getUser!;
+    UserModel currentUser = userProvider.getUser;
 
     if (isLoading) {
       return const Center(
@@ -80,80 +80,40 @@ class _UserState extends State<User> {
             onRefresh: () {
               return listUser(context);
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  // search box
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      // search box
 
-                  // listing of users
-                  SingleChildScrollView(
-                    child: Table(
-                      defaultVerticalAlignment:
-                          TableCellVerticalAlignment.middle,
-                      columnWidths: const {
-                        0: FlexColumnWidth(2), // Adjust column widths as needed
-                        1: FlexColumnWidth(3),
-                        2: FlexColumnWidth(2),
-                        3: FlexColumnWidth(3),
-                        4: FlexColumnWidth(1),
-                      },
-                      border: TableBorder.all(color: Colors.black26),
-                      children: [
-                        TableRow(
-                          decoration: BoxDecoration(color: Colors.grey[200]),
-                          children: const [
-                            TableCell(
-                                child: Padding(
-                                    padding: EdgeInsets.all(8),
-                                    child: Text('Fullname'))),
-                            TableCell(
-                                child: Padding(
-                                    padding: EdgeInsets.all(8),
-                                    child: Text('Email'))),
-                            TableCell(
-                                child: Padding(
-                                    padding: EdgeInsets.all(8),
-                                    child: Text('Role'))),
-                            TableCell(
-                                child: Padding(
-                                    padding: EdgeInsets.all(8),
-                                    child: Text('Address'))),
-                            TableCell(
-                                child: Padding(
-                                    padding: EdgeInsets.all(8),
-                                    child: Text(''))),
+                      // listing of users
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(label: Text("Fullname")),
+                            DataColumn(label: Text("Email")),
+                            DataColumn(label: Text("Role")),
+                            DataColumn(label: Text("Address")),
+                            DataColumn(label: Text("Action")),
                           ],
-                        ),
-                        for (UserModel user in userList)
-                          TableRow(
-                            children: [
-                              TableCell(
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(user.fullname))),
-                              TableCell(
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(user.email))),
-                              TableCell(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    user.role,
-                                    style: const TextStyle(
-                                      backgroundColor: Colors.black38,
-                                      color: Colors.white,
+                          rows: [
+                            for (UserModel user in userList)
+                              DataRow(
+                                cells: [
+                                  DataCell(Text(user.fullname)),
+                                  DataCell(Text(user.email)),
+                                  DataCell(
+                                    Text(
+                                      user.role,
                                     ),
                                   ),
-                                ),
-                              ),
-                              TableCell(
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(user.address))),
-                              TableCell(
-                                  child: IconButton(
+                                  DataCell(Text(user.address)),
+                                  DataCell(IconButton(
                                       onPressed: () {
                                         showModalBottomSheet(
                                             context: context,
@@ -218,6 +178,9 @@ class _UserState extends State<User> {
                                                                           currentUser
                                                                               .storeId,
                                                                           user.uid);
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
                                                                     },
                                                                     child: const Text(
                                                                         'Yes')),
@@ -243,12 +206,14 @@ class _UserState extends State<User> {
                                             });
                                       },
                                       icon: const Icon(Icons.more_vert))),
-                            ],
-                          ),
-                      ],
-                    ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           )

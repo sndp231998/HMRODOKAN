@@ -6,7 +6,8 @@ class ProductModel {
   final String storeId;
   final String categoryId;
   final String imageUrl;
-  int quantity;
+  double quantity;
+  String unit;
   final double purchasePrice;
   final double sellingPrice;
   final String scannerCode;
@@ -17,6 +18,7 @@ class ProductModel {
       required this.storeId,
       required this.categoryId,
       required this.imageUrl,
+      required this.unit,
       required this.quantity,
       required this.purchasePrice,
       required this.sellingPrice,
@@ -30,6 +32,7 @@ class ProductModel {
         storeId: data['storeId'],
         categoryId: data['categoryId'],
         imageUrl: data['imageUrl'],
+        unit: data['unit'],
         quantity: data['quantity'],
         purchasePrice: data['purchasePrice'],
         sellingPrice: data['sellingPrice'],
@@ -43,6 +46,7 @@ class ProductModel {
       'storeId': storeId,
       'categoryId': categoryId,
       'imageUrl': imageUrl,
+      'unit': unit,
       'quantity': quantity,
       'purchasePrice': purchasePrice,
       'sellingPrice': sellingPrice,
@@ -57,6 +61,7 @@ class ProductModel {
         title: snapshot['title'],
         storeId: snapshot['storeId'],
         categoryId: snapshot['categoryId'],
+        unit: snapshot['unit'],
         imageUrl: snapshot['imageUrl'],
         quantity: snapshot['quantity'],
         purchasePrice: snapshot['purchasePrice'],

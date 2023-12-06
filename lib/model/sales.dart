@@ -6,7 +6,7 @@ class SalesModel {
   final String billId;
   final String productId;
   final String name;
-  final int quantity;
+  final double quantity;
   final double discount;
   final double purchaseAt;
 

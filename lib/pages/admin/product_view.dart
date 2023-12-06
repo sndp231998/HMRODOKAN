@@ -30,6 +30,8 @@ class _ProductViewState extends State<ProductView> {
   File? _image;
 
   List<CategoryModel> dropDownList = [];
+  List<String> unitList = ['pc', 'kg', 'ltr'];
+
   String dropDownCategory = '';
 
   bool isSaving = false;
@@ -46,6 +48,7 @@ class _ProductViewState extends State<ProductView> {
       TextEditingController(text: widget.product!.purchasePrice.toString());
   late final _imageUrlController =
       TextEditingController(text: widget.product!.imageUrl);
+  late String unitValue = widget.product!.unit;
 
   FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
 
@@ -61,7 +64,7 @@ class _ProductViewState extends State<ProductView> {
     String imageUrl = _imageUrlController.text;
     double sellingPrice = double.parse(_priceController.text);
     double purchasePrice = double.parse(_priceController.text);
-    int quantity = int.parse(_quantityController.text);
+    double quantity = double.parse(_quantityController.text);
 
     if (productName.isEmpty ||
         scanCode.isEmpty ||
@@ -83,6 +86,7 @@ class _ProductViewState extends State<ProductView> {
           storeId: widget.product!.storeId,
           categoryId: dropDownCategory,
           imageUrl: imageUrl,
+          unit: unitValue,
           quantity: quantity,
           purchasePrice: purchasePrice,
           scannerCode: scanCode,
@@ -269,6 +273,23 @@ class _ProductViewState extends State<ProductView> {
                   )
                 ],
               ),
+              const SizedBox(
+                height: 10,
+              ),
+              DropdownButton(
+                  hint: const Text('Choose Unit'),
+                  value: unitValue.isNotEmpty ? unitValue : null,
+                  items: unitList.map((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      unitValue = value!;
+                    });
+                  }),
               const SizedBox(
                 height: 10,
               ),

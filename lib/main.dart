@@ -4,7 +4,6 @@ import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/firebase_options.dart';
 import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/counter/history.dart';
-import 'package:hmrodokan/prefs.dart';
 import 'package:hmrodokan/provider/admin.dart';
 import 'package:hmrodokan/provider/bill.dart';
 import 'package:hmrodokan/provider/products.dart';

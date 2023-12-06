@@ -29,6 +29,7 @@ class BillProvider extends ChangeNotifier {
           title: product.title,
           storeId: product.storeId,
           categoryId: product.categoryId,
+          unit: product.unit,
           imageUrl: product.imageUrl,
           quantity: product.quantity,
           purchasePrice: product.purchasePrice,

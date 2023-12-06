@@ -34,7 +34,7 @@ class _InventoryPageState extends State<InventoryPage> {
     try {
       List<ProductModel> fetchList = [];
       fetchList = await firebaseFirestoreHelper.listProducts(
-          productsProvider.getFilterValue, userProvider.getUser!.storeId);
+          productsProvider.getFilterValue, userProvider.getUser.storeId);
       setState(() {
         productsList = fetchList;
       });

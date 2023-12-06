@@ -22,16 +22,18 @@ class AuthService extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        if (snapshot.data != null && userProvider.getUser != null) {
-          UserModel? user = userProvider.getUser;
-          if (user != null) {
-            if (user.role == 'admin') {
-              return const AdminDashboard();
-            }
-            if (user.role == 'counter') {
-              return const CounterDashboard();
-            }
+        if (snapshot.data != null) {
+          UserModel user = userProvider.getUser;
+
+          if (user.role == 'admin') {
+            return const AdminDashboard();
           }
+          if (user.role == 'counter') {
+            return const CounterDashboard();
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }
         return const Login();
       },

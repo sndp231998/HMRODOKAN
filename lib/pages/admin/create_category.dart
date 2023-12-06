@@ -131,7 +131,7 @@ class _CreateCategoryState extends State<CreateCategory> {
             ),
             ElevatedButton(
               onPressed: () {
-                handleSave(userProvider.getUser!.storeId);
+                handleSave(userProvider.getUser.storeId);
               },
               child: isSaving
                   ? const Center(

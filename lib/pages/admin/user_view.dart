@@ -110,6 +110,7 @@ class _UserViewState extends State<UserView> {
           child: Column(
             children: [
               CircleAvatar(
+                radius: 25,
                 backgroundColor: Colors.green[900],
                 foregroundColor: Colors.white,
                 child: Text(

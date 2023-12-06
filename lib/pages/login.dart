@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/model/user.dart';
 import 'package:hmrodokan/pages/forgetpassword.dart';
-import 'package:hmrodokan/prefs.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +44,7 @@ class _LoginState extends State<Login> {
     }
     try {
       await authHelper.loginUser(email, password);
-      getCurrentUserDetails(userProvider);
+      await getCurrentUserDetails(userProvider);
       if (context.mounted) Utils().toastor(context, 'Successfully Logged In');
     } catch (e) {
       if (context.mounted) Utils().toastor(context, e.toString());

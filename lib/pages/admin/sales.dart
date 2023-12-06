@@ -39,7 +39,7 @@ class _SalesState extends State<Sales> {
     List<SalesModel> sales;
     try {
       sales = await firebaseFirestoreHelper
-          .listSalesByStoreId(userProvider.getUser!.storeId);
+          .listSalesByStoreId(userProvider.getUser.storeId);
       setState(() {
         salesList = sales;
       });
@@ -58,7 +58,7 @@ class _SalesState extends State<Sales> {
     List<BillModel> bills;
     try {
       bills = await firebaseFirestoreHelper
-          .listBillByStore(userProvider.getUser!.storeId);
+          .listBillByStore(userProvider.getUser.storeId);
       setState(() {
         billList = bills;
       });
@@ -107,14 +107,14 @@ class _SalesState extends State<Sales> {
                       onPressed: () {
                         toggleTab('counter');
                       },
-                      child: const Text('By Counter'))),
+                      child: const Text('Bills'))),
               Expanded(
                   child: TextButton(
                       style: currentTab == 'product' ? activeTab : null,
                       onPressed: () {
                         toggleTab('product');
                       },
-                      child: const Text('By Product'))),
+                      child: const Text('Products'))),
             ],
           ),
           const SizedBox(

@@ -209,8 +209,10 @@ class _CreateBillState extends State<CreateBill> {
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              showOrderInProcess(
-                                  context, billProvider, userProvider);
+                              if (billProvider.productList.isNotEmpty) {
+                                showOrderInProcess(
+                                    context, billProvider, userProvider);
+                              }
                             },
                             child: Container(
                               color: Colors.green,
@@ -443,6 +445,7 @@ class _CreateBillState extends State<CreateBill> {
                           ? null
                           : () async {
                               // create bill
+                              if (paidAmount == 0 && totalAmount == 0) return;
                               setState(
                                 () {
                                   isLoading = true;
@@ -451,8 +454,8 @@ class _CreateBillState extends State<CreateBill> {
                               try {
                                 billData =
                                     await firebaseFirestoreHelper.createBill(
-                                        userProvider.getUser!.uid,
-                                        userProvider.getUser!.storeId,
+                                        userProvider.getUser.uid,
+                                        userProvider.getUser.storeId,
                                         totalAmount,
                                         discount,
                                         paidAmount,

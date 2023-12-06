@@ -56,6 +56,7 @@ class _ProductsCardState extends State<ProductsCard> {
                         style: const TextStyle(fontSize: 16),
                       ),
                     ),
+                    Text(widget.product.unit),
                     const SizedBox(
                       width: 10,
                     ),

@@ -25,32 +25,31 @@ class _CounterDashboardState extends State<CounterDashboard> {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              Container(
-                height: 130,
-                decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Colors.blueGrey,
-                        Colors.green,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Colors.black26,
-                      width: 1.0,
-                    )),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 20.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const CreateBill()),
-                      );
-                    },
-                    child: const Row(
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CreateBill()),
+                  );
+                },
+                child: Container(
+                  height: 130,
+                  decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Colors.blueGrey,
+                          Colors.green,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.black26,
+                        width: 1.0,
+                      )),
+                  child: const Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(

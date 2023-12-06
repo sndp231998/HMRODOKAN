@@ -27,7 +27,7 @@ class _HistoryState extends State<History> {
 
     List<BillModel> bills;
     try {
-      bills = await firebaseFirestoreHelper.listBill(userProvider.getUser!.uid);
+      bills = await firebaseFirestoreHelper.listBill(userProvider.getUser.uid);
       setState(() {
         billList = bills;
       });

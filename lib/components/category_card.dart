@@ -199,7 +199,7 @@ class _CategoryCardState extends State<CategoryCard> {
                                     TextButton(
                                         onPressed: () {
                                           handleEdit(context,
-                                              userProvider.getUser!.storeId);
+                                              userProvider.getUser.storeId);
                                         },
                                         child: const Text('Save')),
                                     TextButton(
