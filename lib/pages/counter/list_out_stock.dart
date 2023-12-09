@@ -2,31 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/components/admin_product.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/model/product.dart';
-import 'package:hmrodokan/provider/products.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:provider/provider.dart';
 
-class InventoryPage extends StatefulWidget {
-  const InventoryPage({super.key});
+class ListOutStock extends StatefulWidget {
+  const ListOutStock({super.key});
 
   @override
-  State<InventoryPage> createState() => _InventoryPageState();
+  State<ListOutStock> createState() => _ListOutStockState();
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class _ListOutStockState extends State<ListOutStock> {
   FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
 
-  late final ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
 
   bool isLoading = true;
   List<ProductModel> productsList = [];
 
   Future<void> listProducts(
       BuildContext context, ProductModel? lastProduct) async {
-    ProductsProvider productsProvider =
-        Provider.of<ProductsProvider>(context, listen: false);
-
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
     if (!isLoading) {
@@ -36,10 +32,8 @@ class _InventoryPageState extends State<InventoryPage> {
     }
     try {
       List<ProductModel> fetchList = [];
-      fetchList = await firebaseFirestoreHelper.listProducts(
-          productsProvider.getFilterValue,
-          userProvider.getUser.storeId,
-          lastProduct);
+      fetchList = await firebaseFirestoreHelper.listOutOfStock(
+          userProvider.getUser.storeId, lastProduct);
       setState(() {
         if (lastProduct != null) {
           productsList.addAll(fetchList);
@@ -56,7 +50,6 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   void handleScroll() {
-    if (isLoading) return;
     if (_controller.position.pixels == _controller.position.maxScrollExtent) {
       listProducts(context, productsList[productsList.length - 1]);
     }
@@ -83,24 +76,30 @@ class _InventoryPageState extends State<InventoryPage> {
       );
     }
 
-    return productsList.isNotEmpty
-        ? RefreshIndicator(
-            onRefresh: () {
-              return listProducts(context, null);
-            },
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              controller: _controller,
-              child: Column(
-                children: [
-                  for (ProductModel products in productsList)
-                    AdminProduct(products: products),
-                ],
-              ),
-            ),
-          )
-        : const Center(
-            child: Text('Add Products to view'),
-          );
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('List out of stock items'),
+        ),
+        body: productsList.isNotEmpty
+            ? RefreshIndicator(
+                onRefresh: () {
+                  return listProducts(context, null);
+                },
+                child: SingleChildScrollView(
+                  controller: _controller,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        for (ProductModel products in productsList)
+                          AdminProduct(products: products),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            : const Center(
+                child: Text('No out of stock right now'),
+              ));
   }
 }

@@ -5,11 +5,12 @@ class DashboardCard extends StatelessWidget {
   final String title;
   final String amount;
 
-  const DashboardCard(
-      {super.key,
-      required this.icon,
-      required this.title,
-      required this.amount});
+  const DashboardCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.amount,
+  });
 
   @override
   Widget build(BuildContext context) {

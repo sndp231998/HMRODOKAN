@@ -285,11 +285,13 @@ class _ProductViewState extends State<ProductView> {
                       child: Text(value),
                     );
                   }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      unitValue = value!;
-                    });
-                  }),
+                  onChanged: widget.isEditing
+                      ? (String? value) {
+                          setState(() {
+                            unitValue = value!;
+                          });
+                        }
+                      : null),
               const SizedBox(
                 height: 10,
               ),

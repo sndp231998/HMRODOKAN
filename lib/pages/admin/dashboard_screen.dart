@@ -64,7 +64,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       'title': 'Counters',
       'amount': '3',
-    }
+    },
+    {
+      'icon': Icon(
+        Icons.warning,
+        size: 50,
+        color: Colors.green[800],
+      ),
+      'title': 'Due',
+      'amount': '3',
+    },
   ];
 
   void toggleIsFetching(bool value) {
@@ -80,6 +89,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     late int outOfStock;
     late int totalCounters;
     late double totalProfit;
+    late int due;
     try {
       // Get the user parameter from the provider
       UserProvider userProvider =
@@ -95,6 +105,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       totalProductsSold = salesWithProducts['totalProductsSold']!;
       outOfStock = await firebaseFirestoreHelper.getOutOfStock(storeId);
       totalCounters = await firebaseAuthHelper.getNoCounters(storeId);
+      due =
+          await firebaseFirestoreHelper.countDue(userProvider.getUser.storeId);
 
       setState(() {
         // Update the state to trigger a rebuild with the new data
@@ -104,6 +116,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _analytics[2]['amount'] = '$totalProductsSold';
         _analytics[3]['amount'] = '$outOfStock';
         _analytics[4]['amount'] = '$totalCounters';
+        _analytics[5]['amount'] = '$due';
       });
     } catch (e) {
       // Handle error
@@ -120,6 +133,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void dispose() {
+    if (context.mounted) Navigator.of(context).pop();
     super.dispose();
   }
 

@@ -53,7 +53,7 @@ class AdminProduct extends StatelessWidget {
                       fontWeight: FontWeight.bold, fontSize: 17),
                 ),
                 Text(
-                  'Quantity: ${products.quantity}pc',
+                  'Quantity: ${products.unit == 'pc' ? products.quantity.toString().split('.')[0] : products.quantity.toString()}${products.unit}',
                   style: const TextStyle(
                     color: Colors.black54,
                   ),

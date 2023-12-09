@@ -95,35 +95,39 @@ class _SalesState extends State<Sales> {
         child: CircularProgressIndicator(),
       );
     }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                  child: TextButton(
-                      style: currentTab == 'counter' ? activeTab : null,
-                      onPressed: () {
-                        toggleTab('counter');
-                      },
-                      child: const Text('Bills'))),
-              Expanded(
-                  child: TextButton(
-                      style: currentTab == 'product' ? activeTab : null,
-                      onPressed: () {
-                        toggleTab('product');
-                      },
-                      child: const Text('Products'))),
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Container(
-            child: currentTab == 'counter' ? counterWidget() : productWidget(),
-          )
-        ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                    child: TextButton(
+                        style: currentTab == 'counter' ? activeTab : null,
+                        onPressed: () {
+                          toggleTab('counter');
+                        },
+                        child: const Text('Bills'))),
+                Expanded(
+                    child: TextButton(
+                        style: currentTab == 'product' ? activeTab : null,
+                        onPressed: () {
+                          toggleTab('product');
+                        },
+                        child: const Text('Products'))),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Container(
+              child:
+                  currentTab == 'counter' ? counterWidget() : productWidget(),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -162,7 +166,7 @@ class _SalesState extends State<Sales> {
       child: DataTable(
           headingRowColor: const MaterialStatePropertyAll(Colors.black12),
           columns: const [
-            // DataColumn(label: Text('Sold Date')),
+            DataColumn(label: Text('UID')),
             DataColumn(label: Text('Product Name')),
             DataColumn(label: Text('Quantity')),
             DataColumn(label: Text('Purchase At')),
@@ -172,7 +176,7 @@ class _SalesState extends State<Sales> {
           rows: [
             for (SalesModel sales in salesList)
               DataRow(cells: [
-                // DataCell(Text(sales.issueDate)),
+                DataCell(Text(sales.uid)),
                 DataCell(Text(sales.name)),
                 DataCell(Text(sales.quantity.toString())),
                 DataCell(Text(sales.purchaseAt.toString())),

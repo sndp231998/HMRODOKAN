@@ -49,13 +49,27 @@ class BillProvider extends ChangeNotifier {
       if (product.uid == prod.uid) {
         if (status) {
           // increase
-          if (checkQuantity(prod)) prod.quantity += 1;
+          if (checkQuantity(prod)) {
+            if (prod.unit == 'pc') {
+              prod.quantity += 1;
+            } else {
+              prod.quantity += 0.25;
+            }
+          }
         } else {
           // decrease
-          if (prod.quantity == 1) {
-            return removeProduct(product);
+
+          if (prod.unit == 'pc') {
+            if (prod.quantity == 1) {
+              return removeProduct(product);
+            }
+            prod.quantity -= 1;
+          } else {
+            if (prod.quantity == 0.25) {
+              return removeProduct(product);
+            }
+            prod.quantity -= 0.25;
           }
-          prod.quantity -= 1;
         }
       }
     }

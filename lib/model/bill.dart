@@ -9,6 +9,9 @@ class BillModel {
   final double discount;
   final double paidAmount;
   final String paymentMethod;
+  final String name;
+  final String phonenumber;
+  final bool isDue;
 
   BillModel({
     required this.uid,
@@ -19,6 +22,9 @@ class BillModel {
     required this.discount,
     required this.paidAmount,
     required this.paymentMethod,
+    required this.name,
+    required this.phonenumber,
+    required this.isDue,
   });
 
   factory BillModel.fromSnapshot(DocumentSnapshot snapshot) {
@@ -32,6 +38,9 @@ class BillModel {
       discount: data['discount'],
       paidAmount: data['paidAmount'],
       paymentMethod: data['paymentMethod'],
+      name: data['name'],
+      phonenumber: data['phonenumber'],
+      isDue: data['isDue'],
     );
   }
 
@@ -45,6 +54,9 @@ class BillModel {
       'discount': discount,
       'paidAmount': paidAmount,
       'paymentMethod': paymentMethod,
+      'name': name,
+      'phonenumber': phonenumber,
+      'isDue': isDue,
     };
   }
 
@@ -59,6 +71,9 @@ class BillModel {
       discount: snapshot['discount'],
       paidAmount: snapshot['paidAmount'],
       paymentMethod: snapshot['paymentMethod'],
+      name: snapshot['name'],
+      phonenumber: snapshot['phonenumber'],
+      isDue: snapshot['isDue'],
     );
   }
 }

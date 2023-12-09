@@ -43,8 +43,7 @@ class InventoryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Quantity. ${product.quantity}pc',
-                  textAlign: TextAlign.start,
+                  'Quantity: ${product.unit == 'pc' ? product.quantity.toString().split('.')[0] : product.quantity.toString()}${product.unit}',
                   style: const TextStyle(
                     color: Colors.black54,
                   ),

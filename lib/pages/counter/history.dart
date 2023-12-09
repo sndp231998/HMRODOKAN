@@ -20,16 +20,24 @@ class _HistoryState extends State<History> {
   bool isLoading = true;
 
   List<BillModel> billList = [];
+  late final ScrollController _controller = ScrollController();
 
   Future<void> listBill(BuildContext context) async {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
 
     List<BillModel> bills;
+    BillModel? lastBill =
+        billList.isEmpty ? null : billList[billList.length - 1];
     try {
-      bills = await firebaseFirestoreHelper.listBill(userProvider.getUser.uid);
+      bills = await firebaseFirestoreHelper.listBill(
+          userProvider.getUser.uid, lastBill);
       setState(() {
-        billList = bills;
+        if (lastBill == null) {
+          billList = bills;
+        } else {
+          billList.addAll(bills);
+        }
       });
     } catch (e) {
       if (context.mounted) return Utils().toastor(context, e.toString());
@@ -39,10 +47,25 @@ class _HistoryState extends State<History> {
     });
   }
 
+  void handleScroll() {
+    if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+      listBill(context);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _controller.addListener(handleScroll);
+
     listBill(context);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(handleScroll);
+
+    super.dispose();
   }
 
   @override
@@ -63,31 +86,40 @@ class _HistoryState extends State<History> {
               child: Text('No history to show'),
             )
           : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: const [
-                  DataColumn(label: Text('Sales ID')),
-                  DataColumn(label: Text('Date')),
-                  DataColumn(label: Text('Payment')),
-                  DataColumn(label: Text('Total')),
-                  DataColumn(label: Text('Action')),
-                ],
-                rows: [
-                  for (BillModel bill in billList)
-                    DataRow(cells: [
-                      DataCell(Text(bill.uid)),
-                      DataCell(Text(bill.issueDate.toString())),
-                      DataCell(Text(bill.paymentMethod)),
-                      DataCell(Text('Rs. ${bill.paidAmount.toString()}')),
-                      DataCell(TextButton(
-                        child: const Text('View'),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => Invoice(bill: bill)));
-                        },
-                      )),
-                    ])
-                ],
+              controller: _controller,
+              scrollDirection: Axis.vertical,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('Sales ID')),
+                      DataColumn(label: Text('Date')),
+                      DataColumn(label: Text('Payment')),
+                      DataColumn(label: Text('Total')),
+                      DataColumn(label: Text('Paid')),
+                      DataColumn(label: Text('Action')),
+                    ],
+                    rows: [
+                      for (BillModel bill in billList)
+                        DataRow(cells: [
+                          DataCell(Text(bill.uid)),
+                          DataCell(Text(bill.issueDate.toString())),
+                          DataCell(Text(bill.paymentMethod)),
+                          DataCell(Text('Rs. ${bill.totalAmount.toString()}')),
+                          DataCell(Text('Rs. ${bill.paidAmount.toString()}')),
+                          DataCell(TextButton(
+                            child: const Text('View'),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => Invoice(bill: bill)));
+                            },
+                          )),
+                        ])
+                    ],
+                  ),
+                ),
               ),
             ),
     );

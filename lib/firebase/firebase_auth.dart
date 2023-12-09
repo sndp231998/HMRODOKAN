@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hmrodokan/model/store.dart';
 import 'package:hmrodokan/model/user.dart';
 
 class FirebaseAuthHelper {
@@ -71,14 +72,25 @@ class FirebaseAuthHelper {
   }
 
   // list users with pagination
-  Future<List<UserModel>> listUsers(String storeId) async {
+  Future<List<UserModel>> listUsers(String storeId, UserModel? lastUser) async {
     List<UserModel> userList = [];
-    try {
-      await _firebaseFirestore
+    final Query<Map<String, dynamic>> queryRef;
+    if (lastUser == null) {
+      queryRef = _firebaseFirestore
+          .collection('users')
+          .where('storeId', isEqualTo: storeId);
+    } else {
+      var lastRef =
+          await _firebaseFirestore.collection('users').doc(lastUser.uid).get();
+      if (!lastRef.exists) throw Exception('no more data to load');
+
+      queryRef = _firebaseFirestore
           .collection('users')
           .where('storeId', isEqualTo: storeId)
-          .get()
-          .then((querySnapshot) {
+          .startAfterDocument(lastRef);
+    }
+    try {
+      await queryRef.limit(20).get().then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           String uid = docSnapshot.get('uid');
           String storeId = docSnapshot.get('storeId');
@@ -159,5 +171,18 @@ class FirebaseAuthHelper {
     } catch (e) {
       throw Exception(e);
     }
+  }
+
+  Future<StoreModel?> getStoreInfo(String storeId) async {
+    var querySnapshot = await _firebaseFirestore
+        .collection('stores')
+        .where('uid', isEqualTo: storeId)
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      var documentSnapshot = querySnapshot.docs.first;
+
+      return StoreModel.fromSnapshot(documentSnapshot);
+    }
+    return null;
   }
 }

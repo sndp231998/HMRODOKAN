@@ -49,14 +49,25 @@ class _ProductsCardState extends State<ProductsCard> {
                       width: 10,
                     ),
                     Container(
-                      color: Colors.black12,
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        widget.product.quantity.toString(),
-                        style: const TextStyle(fontSize: 16),
-                      ),
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        color: Colors.black54,
+                        width: 1.0,
+                      )),
+                      child: Row(children: [
+                        Text(
+                          widget.product.unit == 'pc'
+                              ? widget.product.quantity.toString().split('.')[0]
+                              : widget.product.quantity.toString(),
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(widget.product.unit),
+                      ]),
                     ),
-                    Text(widget.product.unit),
                     const SizedBox(
                       width: 10,
                     ),

@@ -32,6 +32,8 @@ TextStyle highlightedText = const TextStyle(
 class _CreateBillState extends State<CreateBill> {
   FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
   late final SearchController searchController;
+  late final TextEditingController nameController;
+  late final TextEditingController phoneNumberController;
 
   late BillModel billData;
 
@@ -47,12 +49,16 @@ class _CreateBillState extends State<CreateBill> {
   @override
   void initState() {
     searchController = SearchController();
+    nameController = TextEditingController();
+    phoneNumberController = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    nameController.dispose();
+    phoneNumberController.dispose();
     super.dispose();
   }
 
@@ -275,258 +281,298 @@ class _CreateBillState extends State<CreateBill> {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
+        isDismissible: true,
         builder: (context) {
-          return StatefulBuilder(builder: ((context, setState) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              height: MediaQuery.of(context).size.height * .7,
-              color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    'Order in Progress',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
+          return SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: StatefulBuilder(builder: ((context, setState) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  color: Colors.white,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // input box
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Discount Amount',
-                                  style: highlightedText,
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.6,
-                                  child: TextField(
-                                    onChanged: (String value) {
-                                      setState(() {
-                                        discount = double.parse(value);
-                                      });
-                                    },
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Paid Amount',
-                                  style: highlightedText,
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                TextField(
-                                  onChanged: (String value) {
-                                    setState(() {
-                                      paidAmount = double.parse(value);
-                                      refundAmount =
-                                          paidAmount - discount - totalAmount;
-                                    });
-                                  },
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
+                      const Text(
+                        'Order in Progress',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
                       ),
-
-                      // amounts
-                      Expanded(
-                        flex: 1,
-                        child: Column(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          // input box
+                          Expanded(
+                            flex: 2,
+                            child: Column(
                               children: [
                                 Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Total Amount',
+                                      'Discount Amount',
                                       style: highlightedText,
                                     ),
-                                    Text(
-                                      'Rs. ${totalAmount.toString()}',
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                    const SizedBox(
+                                      height: 5,
                                     ),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.6,
+                                      child: TextField(
+                                        onChanged: (String value) {
+                                          setState(() {
+                                            discount = double.parse(value);
+                                          });
+                                        },
+                                        decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 ),
                                 const SizedBox(
                                   height: 20,
                                 ),
                                 Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Refund Amount',
+                                      'Paid Amount',
                                       style: highlightedText,
                                     ),
-                                    Text(
-                                      'Rs. ${refundAmount.toString()}',
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                    const SizedBox(
+                                      height: 5,
                                     ),
+                                    TextField(
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          paidAmount = double.parse(value);
+                                          refundAmount = paidAmount -
+                                              discount -
+                                              totalAmount;
+                                        });
+                                      },
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    )
                                   ],
-                                )
+                                ),
                               ],
                             ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      color: Colors.white,
-                      width: MediaQuery.of(context).size.width * .7,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Payment Type'),
-                          DropdownButton(
-                              value: dropDownValue,
-                              items: _paymentItems.map((item) {
-                                return DropdownMenuItem<String>(
-                                    alignment: Alignment.centerLeft,
-                                    value: item,
-                                    child: Text(
-                                      item,
-                                    ));
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  dropDownValue = value!;
-                                });
-                              }),
+                          ),
+
+                          // amounts
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Total Amount',
+                                          style: highlightedText,
+                                        ),
+                                        Text(
+                                          'Rs. ${totalAmount.toString()}',
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Refund Amount',
+                                          style: highlightedText,
+                                        ),
+                                        Text(
+                                          'Rs. ${refundAmount.toString()}',
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                      style: const ButtonStyle(
-                        padding: MaterialStatePropertyAll(
-                            EdgeInsets.symmetric(vertical: 20)),
+                      const SizedBox(
+                        height: 20,
                       ),
-                      onPressed: isLoading
-                          ? null
-                          : () async {
-                              // create bill
-                              if (paidAmount == 0 && totalAmount == 0) return;
-                              setState(
-                                () {
-                                  isLoading = true;
-                                },
-                              );
-                              try {
-                                billData =
-                                    await firebaseFirestoreHelper.createBill(
-                                        userProvider.getUser.uid,
-                                        userProvider.getUser.storeId,
-                                        totalAmount,
-                                        discount,
-                                        paidAmount,
-                                        dropDownValue);
-
-                                // billProvider.productList
-                                // grab discount amount
-                                // paid amount
-
-                                for (ProductModel product
-                                    in billProvider.productList) {
-                                  await firebaseFirestoreHelper.createSales(
-                                      billData.uid,
-                                      product.uid,
-                                      product.sellingPrice,
-                                      product.purchasePrice,
-                                      product.title,
-                                      product.quantity);
-                                }
-
-                                billProvider.clearBill();
-                                setState(
-                                  () {
-                                    isLoading = false;
-                                    discount = 0;
-                                    paidAmount = 0;
-                                    refundAmount = 0;
-                                  },
-                                );
-
-                                if (context.mounted) {
-                                  Utils().toastor(
-                                      context, 'Bill Creation Successful');
-
-                                  // Delay for a short duration before showing the completion modal
-                                  await Future.delayed(
-                                      const Duration(seconds: 2));
-
-                                  if (context.mounted) {
-                                    showOrderCompletionModal(context);
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          color: Colors.white,
+                          width: MediaQuery.of(context).size.width * .7,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Payment Type'),
+                              DropdownButton(
+                                  value: dropDownValue,
+                                  items: _paymentItems.map((item) {
+                                    return DropdownMenuItem<String>(
+                                        alignment: Alignment.centerLeft,
+                                        value: item,
+                                        child: Text(
+                                          item,
+                                        ));
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      dropDownValue = value!;
+                                    });
+                                  }),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextField(
+                        controller: nameController,
+                        decoration:
+                            const InputDecoration(hintText: 'Enter Name'),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextField(
+                        controller: phoneNumberController,
+                        decoration: const InputDecoration(
+                            hintText: 'Enter Phonenumber'),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton(
+                          style: const ButtonStyle(
+                            padding: MaterialStatePropertyAll(
+                                EdgeInsets.symmetric(vertical: 20)),
+                          ),
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  // create bill
+                                  if (paidAmount == 0 && totalAmount == 0) {
+                                    return Utils().toastor(context,
+                                        'Please enter either name or phonenumber for due amount');
                                   }
-                                }
-                              } catch (e) {
-                                if (context.mounted) {
-                                  Utils().toastor(context, e.toString());
-                                  Navigator.of(context).pop();
-                                }
-                              }
+                                  if (paidAmount < totalAmount &&
+                                      (nameController.text.isEmpty ||
+                                          phoneNumberController.text.isEmpty)) {
+                                    return Utils().toastor(context,
+                                        'Please enter either name or phonenumber for due amount');
+                                  }
+                                  if (paidAmount < totalAmount) {
+                                    dropDownValue = 'due';
+                                  }
+                                  setState(
+                                    () {
+                                      isLoading = true;
+                                    },
+                                  );
+                                  try {
+                                    billData = await firebaseFirestoreHelper
+                                        .createBill(
+                                            userProvider.getUser.uid,
+                                            userProvider.getUser.storeId,
+                                            totalAmount,
+                                            discount,
+                                            paidAmount,
+                                            dropDownValue,
+                                            nameController.text,
+                                            phoneNumberController.text);
 
-                              billProvider.clearBill();
-                              setState(
-                                () {
-                                  isLoading = false;
-                                  discount = 0;
-                                  paidAmount = 0;
-                                  refundAmount = 0;
+                                    // billProvider.productList
+                                    // grab discount amount
+                                    // paid amount
+
+                                    for (ProductModel product
+                                        in billProvider.productList) {
+                                      await firebaseFirestoreHelper.createSales(
+                                          billData.uid,
+                                          product.uid,
+                                          product.sellingPrice,
+                                          product.purchasePrice,
+                                          product.title,
+                                          product.quantity);
+                                    }
+
+                                    billProvider.clearBill();
+                                    setState(
+                                      () {
+                                        isLoading = false;
+                                        discount = 0;
+                                        paidAmount = 0;
+                                        refundAmount = 0;
+                                      },
+                                    );
+
+                                    if (context.mounted) {
+                                      Utils().toastor(
+                                          context, 'Bill Creation Successful');
+
+                                      // Delay for a short duration before showing the completion modal
+                                      await Future.delayed(
+                                          const Duration(seconds: 2));
+
+                                      if (context.mounted) {
+                                        showOrderCompletionModal(context);
+                                      }
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      Utils().toastor(context, e.toString());
+                                      Navigator.of(context).pop();
+                                    }
+                                  }
+
+                                  billProvider.clearBill();
+                                  setState(
+                                    () {
+                                      isLoading = false;
+                                      discount = 0;
+                                      paidAmount = 0;
+                                      refundAmount = 0;
+                                    },
+                                  );
                                 },
-                              );
-                            },
-                      child: isLoading
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : const Text(
-                              'Create Bill',
-                              style: TextStyle(fontSize: 18),
-                            )),
-                ],
-              ),
-            );
-          }));
+                          child: isLoading
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : const Text(
+                                  'Create Bill',
+                                  style: TextStyle(fontSize: 18),
+                                )),
+                    ],
+                  ),
+                );
+              })),
+            ),
+          );
         });
   }
 
