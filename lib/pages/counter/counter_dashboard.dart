@@ -110,6 +110,9 @@ class _CounterDashboardState extends State<CounterDashboard> {
                             onPressed: () async {
                               try {
                                 await authHelper.signOut();
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
                               } catch (e) {
                                 if (context.mounted) {
                                   Utils().toastor(context, e.toString());
