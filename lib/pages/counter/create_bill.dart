@@ -484,9 +484,7 @@ class _CreateBillState extends State<CreateBill> {
                                     return Utils().toastor(context,
                                         'Please enter either name or phonenumber for due amount');
                                   }
-                                  if (paidAmount < totalAmount) {
-                                    dropDownValue = 'due';
-                                  }
+
                                   setState(
                                     () {
                                       isLoading = true;
@@ -500,7 +498,9 @@ class _CreateBillState extends State<CreateBill> {
                                             totalAmount,
                                             discount,
                                             paidAmount,
-                                            dropDownValue,
+                                            paidAmount < totalAmount
+                                                ? 'due'
+                                                : dropDownValue,
                                             nameController.text,
                                             phoneNumberController.text);
 
@@ -533,14 +533,7 @@ class _CreateBillState extends State<CreateBill> {
                                     if (context.mounted) {
                                       Utils().toastor(
                                           context, 'Bill Creation Successful');
-
-                                      // Delay for a short duration before showing the completion modal
-                                      await Future.delayed(
-                                          const Duration(seconds: 2));
-
-                                      if (context.mounted) {
-                                        showOrderCompletionModal(context);
-                                      }
+                                      showOrderCompletionModal(context);
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
