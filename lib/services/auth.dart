@@ -10,10 +10,10 @@ import 'package:provider/provider.dart';
 class AuthService extends StatelessWidget {
   const AuthService({Key? key}) : super(key: key);
 
+  // @override
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
-
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
@@ -24,7 +24,6 @@ class AuthService extends StatelessWidget {
         }
         if (snapshot.data != null) {
           UserModel user = userProvider.getUser;
-
           if (user.role == 'admin') {
             return const AdminDashboard();
           }

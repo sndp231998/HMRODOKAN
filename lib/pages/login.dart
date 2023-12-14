@@ -18,6 +18,7 @@ class _LoginState extends State<Login> {
   TextEditingController passwordController = TextEditingController();
 
   String currentRole = 'counter';
+  FirebaseAuthHelper authHelper = FirebaseAuthHelper();
 
   final BoxDecoration activeUserBorder = BoxDecoration(
       border: Border.all(
@@ -31,20 +32,17 @@ class _LoginState extends State<Login> {
     });
   }
 
-  void _login(BuildContext context) async {
+  void _login(UserProvider userProvider) async {
+    if (!mounted) return;
     String email = usernameController.text;
     String password = passwordController.text;
-
-    FirebaseAuthHelper authHelper = FirebaseAuthHelper();
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
 
     if (email == '' || password == '') {
       return Utils().toastor(context, 'Some fields are empty');
     }
     try {
       await authHelper.loginUser(email, password);
-      await getCurrentUserDetails(userProvider);
+      if (mounted) await getCurrentUserDetails(userProvider);
       if (context.mounted) Utils().toastor(context, 'Successfully Logged In');
     } catch (e) {
       if (context.mounted) Utils().toastor(context, e.toString());
@@ -52,8 +50,6 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> getCurrentUserDetails(UserProvider userProvider) async {
-    FirebaseAuthHelper authHelper = FirebaseAuthHelper();
-
     UserModel? user = await authHelper.getUserInstance();
 
     if (user != null) {
@@ -62,7 +58,14 @@ class _LoginState extends State<Login> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -194,7 +197,7 @@ class _LoginState extends State<Login> {
                 ),
 
                 ElevatedButton(
-                  onPressed: () => _login(context),
+                  onPressed: () => _login(userProvider),
                   style: const ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(Colors.green),
                     foregroundColor: MaterialStatePropertyAll(Colors.white),

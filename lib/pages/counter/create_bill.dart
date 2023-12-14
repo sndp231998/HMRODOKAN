@@ -153,7 +153,6 @@ class _CreateBillState extends State<CreateBill> {
                           // query to db and add to provider
                           ProductModel? prod = await firebaseFirestoreHelper
                               .searchByScanner(code);
-
                           if (prod == null && context.mounted) {
                             return Utils().toastor(context,
                                 'Product Not Found in db for given code');
@@ -517,7 +516,8 @@ class _CreateBillState extends State<CreateBill> {
                                           product.sellingPrice,
                                           product.purchasePrice,
                                           product.title,
-                                          product.quantity);
+                                          product.quantity,
+                                          product.storeId);
                                     }
 
                                     billProvider.clearBill();

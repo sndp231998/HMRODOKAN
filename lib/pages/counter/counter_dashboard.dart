@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
@@ -21,10 +23,11 @@ class _CounterDashboardState extends State<CounterDashboard> {
   int _currentIndex = 0;
   FirebaseAuthHelper authHelper = FirebaseAuthHelper();
   FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
-  StoreModel? storeInfo;
   int dueBills = 0;
   bool isLoading = false;
   int outOfStock = 0;
+  StoreModel? store;
+  late Completer<void> _fetchDetailsCompleter;
 
   void toggleIsLoading(bool value) {
     setState(() {
@@ -33,6 +36,9 @@ class _CounterDashboardState extends State<CounterDashboard> {
   }
 
   Future<void> fetchDetails() async {
+    if (!mounted) {
+      return; // Check if the widget is still active
+    }
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
     toggleIsLoading(true);
@@ -42,29 +48,42 @@ class _CounterDashboardState extends State<CounterDashboard> {
           .getOutOfStock(userProvider.getUser.storeId);
       int count =
           await firebaseFirestoreHelper.countDue(userProvider.getUser.storeId);
-      StoreModel? result =
+
+      StoreModel? storeInfo =
           await authHelper.getStoreInfo(userProvider.getUser.storeId);
 
-      setState(() {
-        storeInfo = result;
-        dueBills = count;
-        outOfStock = outStock;
-      });
+      if (mounted) {
+        setState(() {
+          dueBills = count;
+          outOfStock = outStock;
+          store = storeInfo;
+        });
+      }
     } catch (e) {
       if (context.mounted) Utils().toastor(context, e.toString());
     }
-    toggleIsLoading(false);
+    if (mounted) {
+      // Check if the widget is still active before completing the operation
+      toggleIsLoading(false);
+      _fetchDetailsCompleter.complete();
+    }
   }
 
   @override
   void initState() {
+    _fetchDetailsCompleter = Completer<void>();
+
     fetchDetails();
+
     super.initState();
   }
 
   @override
   void dispose() {
-    if (context.mounted) Navigator.of(context).pop();
+    // Cancel the asynchronous operation if it's still ongoing
+    if (!_fetchDetailsCompleter.isCompleted) {
+      _fetchDetailsCompleter.completeError('Disposed');
+    }
     super.dispose();
   }
 
@@ -91,17 +110,21 @@ class _CounterDashboardState extends State<CounterDashboard> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const Icon(
+                              Icons.storefront,
+                              size: 30,
+                            ),
                             Text(
-                              storeInfo != null ? storeInfo!.name : 'Store ABC',
+                              store != null ? store!.name : 'Hamrodokan',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              storeInfo != null
-                                  ? storeInfo!.address
-                                  : 'Address XYZ',
+                              store != null
+                                  ? store!.address
+                                  : 'Urlabari, Morang',
                               style: const TextStyle(),
                             ),
                           ],
@@ -110,9 +133,6 @@ class _CounterDashboardState extends State<CounterDashboard> {
                             onPressed: () async {
                               try {
                                 await authHelper.signOut();
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
                               } catch (e) {
                                 if (context.mounted) {
                                   Utils().toastor(context, e.toString());

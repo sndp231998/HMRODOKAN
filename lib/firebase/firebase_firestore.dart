@@ -303,12 +303,9 @@ class FirebaseFirestoreHelper {
       var querySnapshot = await _firebaseFirestore
           .collection('Products')
           .where('storeId', isEqualTo: storeId)
+          .where('quantity', isEqualTo: 0)
           .get();
-      int count = 0;
-      for (var doc in querySnapshot.docs) {
-        count += doc['quantity'] == 0 ? 1 : 0;
-      }
-      return count;
+      return querySnapshot.size;
     } catch (e) {
       throw Exception(e);
     }
@@ -317,13 +314,20 @@ class FirebaseFirestoreHelper {
   // Search product through input
   Future<List<ProductModel>> fetchProductSuggestions(String query) async {
     List<ProductModel> productList = [];
-
+    String searchQueryType = 'title';
+    try {
+      int.parse(query);
+      searchQueryType = 'scannerCode';
+    } catch (e) {
+      // print('String ' + query);
+      searchQueryType = 'title';
+    }
     query = Utils().capitalizeFirstLetter(query.toLowerCase());
 
     await _firebaseFirestore
         .collection('Products')
-        .where('title', isGreaterThanOrEqualTo: query)
-        .where('title', isLessThan: '$query\uf8ff')
+        .where(searchQueryType, isGreaterThanOrEqualTo: query)
+        .where(searchQueryType, isLessThan: '$query\uf8ff')
         .limit(20)
         .get()
         .then((querySnapshot) {
@@ -338,7 +342,7 @@ class FirebaseFirestoreHelper {
         double sellingPrice = docSnapshot.get('sellingPrice');
         double purchasePrice = docSnapshot.get('purchasePrice');
         String scannerCode = docSnapshot.get('scannerCode');
-
+        if (quantity == 0) continue;
         ProductModel product = ProductModel(
           uid: uid,
           imageUrl: imageUrl,
@@ -439,15 +443,31 @@ class FirebaseFirestoreHelper {
   }
 
   // list bill by store id
-  Future<List<BillModel>> listBillByStore(String storeId) async {
+  Future<List<BillModel>> listBillByStore(
+      String storeId, BillModel? lastBill) async {
     List<BillModel> bills = [];
 
-    try {
-      await _firebaseFirestore
+    final Query<Map<String, dynamic>> queryRef;
+
+    if (lastBill == null) {
+      queryRef = _firebaseFirestore
           .collection('bills')
-          .where('storeId', isEqualTo: storeId)
-          .get()
-          .then((querySnapshot) {
+          .where('storeId', isEqualTo: storeId);
+    } else {
+      var lastBillRef =
+          await _firebaseFirestore.collection('bills').doc(lastBill.uid).get();
+      if (lastBillRef.exists) {
+        queryRef = _firebaseFirestore
+            .collection('bills')
+            .where('storeId', isEqualTo: storeId)
+            .startAfterDocument(lastBillRef);
+      } else {
+        throw Exception('No more data to load');
+      }
+    }
+
+    try {
+      await queryRef.limit(10).get().then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           String uid = docSnapshot.get('uid');
           double totalAmount = docSnapshot.get('totalAmount');
@@ -615,6 +635,7 @@ class FirebaseFirestoreHelper {
         String uid = docSnapshot.get('uid');
         double soldAt = docSnapshot.get('soldAt');
         String productId = docSnapshot.get('productId');
+        String storeId = docSnapshot.get('storeId');
         String name = docSnapshot.get('name');
         double quantity = double.parse(docSnapshot.get('quantity').toString());
         double discount = docSnapshot.get('discount');
@@ -625,6 +646,7 @@ class FirebaseFirestoreHelper {
             soldAt: soldAt,
             billId: billId,
             productId: productId,
+            storeId: storeId,
             name: name,
             quantity: quantity,
             discount: discount,
@@ -638,58 +660,62 @@ class FirebaseFirestoreHelper {
   }
 
   // list sales by Storeid
-  Future<List<SalesModel>> listSalesByStoreId(String storeId) async {
-    List<String> billIdList = [];
+  Future<List<SalesModel>> listSalesByStoreId(
+      String storeId, SalesModel? lastSales) async {
     List<SalesModel> sales = [];
 
-    await _firebaseFirestore
-        .collection('bills')
-        .where('storeId', isEqualTo: storeId)
-        .get()
-        .then((querySnapshot) {
+    final Query<Map<String, dynamic>> queryRef;
+
+    if (lastSales == null) {
+      queryRef = _firebaseFirestore
+          .collection('sales')
+          .where('storeId', isEqualTo: storeId);
+    } else {
+      var lastSalesRef =
+          await _firebaseFirestore.collection('sales').doc(lastSales.uid).get();
+      if (lastSalesRef.exists) {
+        queryRef = _firebaseFirestore
+            .collection('sales')
+            .where('storeId', isEqualTo: storeId)
+            .startAfterDocument(lastSalesRef);
+      } else {
+        throw Exception('No more data to load');
+      }
+    }
+
+    await queryRef.limit(10).get().then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {
         String uid = docSnapshot.get('uid');
-        billIdList.add(uid);
+        double soldAt = docSnapshot.get('soldAt');
+        String billId = docSnapshot.get('billId');
+        String productId = docSnapshot.get('productId');
+        String name = docSnapshot.get('name');
+        String storeId = docSnapshot.get('storeId');
+        double quantity = double.parse(docSnapshot.get('quantity').toString());
+        double discount = docSnapshot.get('discount');
+        double purchaseAt = docSnapshot.get('purchaseAt');
+
+        SalesModel newSales = SalesModel(
+            uid: uid,
+            soldAt: soldAt,
+            billId: billId,
+            productId: productId,
+            storeId: storeId,
+            name: name,
+            quantity: quantity,
+            discount: discount,
+            purchaseAt: purchaseAt);
+
+        sales.add(newSales);
       }
     });
-
-    for (var billId in billIdList) {
-      await _firebaseFirestore
-          .collection('sales')
-          .where('billId', isEqualTo: billId)
-          .get()
-          .then((querySnapshot) {
-        for (var docSnapshot in querySnapshot.docs) {
-          String uid = docSnapshot.get('uid');
-          double soldAt = docSnapshot.get('soldAt');
-          String productId = docSnapshot.get('productId');
-          String name = docSnapshot.get('name');
-          double quantity =
-              double.parse(docSnapshot.get('quantity').toString());
-          double discount = docSnapshot.get('discount');
-          double purchaseAt = docSnapshot.get('purchaseAt');
-
-          SalesModel newSales = SalesModel(
-              uid: uid,
-              soldAt: soldAt,
-              billId: billId,
-              productId: productId,
-              name: name,
-              quantity: quantity,
-              discount: discount,
-              purchaseAt: purchaseAt);
-
-          sales.add(newSales);
-        }
-      });
-    }
 
     return sales;
   }
 
   // create sales
   Future<void> createSales(String billId, String productId, double soldAt,
-      double purchaseAt, String name, double quantity) async {
+      double purchaseAt, String name, double quantity, String storeId) async {
     var uid = _uuid.v4();
     uid = uid.toString();
     SalesModel sales = SalesModel(
@@ -697,6 +723,7 @@ class FirebaseFirestoreHelper {
         soldAt: soldAt,
         billId: billId,
         productId: productId,
+        storeId: storeId,
         name: name,
         quantity: quantity,
         discount: 0,

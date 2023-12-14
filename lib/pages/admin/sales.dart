@@ -20,7 +20,10 @@ class _SalesState extends State<Sales> {
   final FirebaseFirestoreHelper firebaseFirestoreHelper =
       FirebaseFirestoreHelper();
   bool isLoading = false;
+  bool isMoreLoading = false;
+
   String currentTab = 'counter';
+  final ScrollController _controller = ScrollController();
 
   List<SalesModel> salesList = [];
   List<BillModel> billList = [];
@@ -37,12 +40,17 @@ class _SalesState extends State<Sales> {
         Provider.of<UserProvider>(context, listen: false);
 
     List<SalesModel> sales;
+    SalesModel? lastSales =
+        salesList.isEmpty ? null : salesList[salesList.length - 1];
     try {
-      sales = await firebaseFirestoreHelper
-          .listSalesByStoreId(userProvider.getUser.storeId);
-      setState(() {
+      sales = await firebaseFirestoreHelper.listSalesByStoreId(
+          userProvider.getUser.storeId, lastSales);
+
+      if (lastSales == null) {
         salesList = sales;
-      });
+      } else {
+        salesList.addAll(sales);
+      }
     } catch (e) {
       if (context.mounted) return Utils().toastor(context, e.toString());
     }
@@ -56,12 +64,16 @@ class _SalesState extends State<Sales> {
         Provider.of<UserProvider>(context, listen: false);
 
     List<BillModel> bills;
+    BillModel? lastBill =
+        billList.isEmpty ? null : billList[billList.length - 1];
     try {
-      bills = await firebaseFirestoreHelper
-          .listBillByStore(userProvider.getUser.storeId);
-      setState(() {
+      bills = await firebaseFirestoreHelper.listBillByStore(
+          userProvider.getUser.storeId, lastBill);
+      if (lastBill == null) {
         billList = bills;
-      });
+      } else {
+        billList.addAll(bills);
+      }
     } catch (e) {
       if (context.mounted) return Utils().toastor(context, e.toString());
     }
@@ -82,10 +94,37 @@ class _SalesState extends State<Sales> {
     }
   }
 
+  void toggleMoreLoading(bool value) {
+    setState(() {
+      isMoreLoading = value;
+    });
+  }
+
+  void handleScroll() async {
+    toggleMoreLoading(true);
+    if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+      if (currentTab == 'counter' && mounted) {
+        await listBill(context);
+      }
+      if (currentTab == 'product' && mounted) {
+        await listSales(context);
+      }
+    }
+    toggleMoreLoading(false);
+  }
+
   @override
   void initState() {
     super.initState();
     listTab();
+    _controller.addListener(handleScroll);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(handleScroll);
+
+    super.dispose();
   }
 
   @override
@@ -96,7 +135,6 @@ class _SalesState extends State<Sales> {
       );
     }
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
@@ -123,9 +161,13 @@ class _SalesState extends State<Sales> {
               height: 20,
             ),
             Container(
-              child:
-                  currentTab == 'counter' ? counterWidget() : productWidget(),
-            )
+                child: currentTab == 'counter'
+                    ? counterWidget()
+                    : productWidget()),
+            if (isMoreLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
           ],
         ),
       ),

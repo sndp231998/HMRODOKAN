@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/firebase_options.dart';
 import 'package:hmrodokan/model/user.dart';
-import 'package:hmrodokan/pages/counter/history.dart';
 import 'package:hmrodokan/provider/admin.dart';
 import 'package:hmrodokan/provider/bill.dart';
 import 'package:hmrodokan/provider/products.dart';
@@ -16,26 +15,23 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  // Initialize UserProvider before runApp
   UserProvider userProvider = UserProvider();
-  await getCurrentUserDetails(userProvider);
 
-  runApp(
-    MultiProvider(
-      providers: [
-        // Use ChangeNotifierProvider.value to provide an existing instance
-        ChangeNotifierProvider.value(value: userProvider),
-        ChangeNotifierProvider.value(value: ProductsProvider()),
-        ChangeNotifierProvider.value(value: AdminProvider()),
-        ChangeNotifierProvider.value(value: BillProvider()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  await initializeUser(userProvider);
+
+  runApp(MultiProvider(
+    providers: [
+      // Use ChangeNotifierProvider.value to provide an existing instance
+      ChangeNotifierProvider.value(value: userProvider),
+      ChangeNotifierProvider.value(value: ProductsProvider()),
+      ChangeNotifierProvider.value(value: AdminProvider()),
+      ChangeNotifierProvider.value(value: BillProvider()),
+    ],
+    child: const MyApp(),
+  ));
 }
 
-Future<void> getCurrentUserDetails(UserProvider userProvider) async {
+Future<void> initializeUser(UserProvider userProvider) async {
   FirebaseAuthHelper authHelper = FirebaseAuthHelper();
   UserModel? user = await authHelper.getUserInstance();
 
@@ -47,6 +43,7 @@ Future<void> getCurrentUserDetails(UserProvider userProvider) async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  // Initialize UserProvider before runApp
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -56,9 +53,6 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color.fromARGB(245, 255, 255, 255),
       ),
       home: const AuthService(),
-      routes: {
-        'history': (context) => const History(),
-      },
     );
   }
 }

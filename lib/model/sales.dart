@@ -5,6 +5,7 @@ class SalesModel {
   final double soldAt;
   final String billId;
   final String productId;
+  final String storeId;
   final String name;
   final double quantity;
   final double discount;
@@ -14,6 +15,7 @@ class SalesModel {
     required this.uid,
     required this.soldAt,
     required this.billId,
+    required this.storeId,
     required this.name,
     required this.quantity,
     required this.productId,
@@ -27,6 +29,7 @@ class SalesModel {
       uid: data['uid'],
       soldAt: data['soldAt'],
       billId: data['billId'],
+      storeId: data['storeId'],
       productId: data['productId'],
       name: data['name'],
       quantity: data['quantity'],
@@ -41,6 +44,7 @@ class SalesModel {
       'soldAt': soldAt,
       'billId': billId,
       'productId': productId,
+      'storeId': storeId,
       'name': name,
       'quantity': quantity,
       'discount': discount,
@@ -55,6 +59,7 @@ class SalesModel {
       soldAt: snapshot['soldAt'],
       billId: snapshot['billId'],
       productId: snapshot['productId'],
+      storeId: snapshot['storeId'],
       name: snapshot['name'],
       quantity: snapshot['quantity'],
       discount: snapshot['discount'],

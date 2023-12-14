@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
+import 'package:hmrodokan/model/store.dart';
 import 'package:hmrodokan/pages/admin/add_inventory.dart';
 import 'package:hmrodokan/pages/admin/category.dart';
 import 'package:hmrodokan/pages/admin/create_category.dart';
@@ -8,6 +9,7 @@ import 'package:hmrodokan/pages/admin/user.dart';
 import 'package:hmrodokan/pages/admin/inventory.dart';
 import 'package:hmrodokan/pages/admin/user_create.dart';
 import 'package:hmrodokan/provider/admin.dart';
+import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -32,15 +34,58 @@ class _AdminDashboardState extends State<AdminDashboard> {
     {'widget': const Sales(), 'title': "Sales"},
   ];
 
+  StoreModel? store;
+
+  Future<void> fetchStoreDetails() async {
+    if (!mounted) return;
+    try {
+      UserProvider userProvider =
+          Provider.of<UserProvider>(context, listen: false);
+      StoreModel? storeInfo =
+          await authHelper.getStoreInfo(userProvider.getUser.storeId);
+      if (mounted) {
+        setState(() {
+          store = storeInfo;
+        });
+      }
+    } catch (e) {
+      if (context.mounted) Utils().toastor(context, e.toString());
+    }
+  }
+
+  @override
+  void initState() {
+    fetchStoreDetails();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     AdminProvider adminProvider =
         Provider.of<AdminProvider>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.white,
-        title: Text(
-          '${_widgets[adminProvider.getCurrentIndex]["title"]}',
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              store != null ? store!.name : 'Hamrodokan'
+              // '${_widgets[adminProvider.getCurrentIndex]["title"]}'
+              ,
+              style: const TextStyle(fontSize: 15),
+            ),
+            Text(
+              store != null ? store!.address : 'Urlabari, Morang',
+              style: const TextStyle(fontSize: 15),
+            )
+          ],
         ),
         backgroundColor: Colors.green,
         actions: [
@@ -80,6 +125,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
+        shape: const CircleBorder(),
         onPressed: () {
           showModalBottomSheet(
               context: context,

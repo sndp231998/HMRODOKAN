@@ -83,6 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> loadData() async {
+    if (!mounted) return;
     toggleIsFetching(true);
     late double totalSales;
     late int totalProductsSold;
@@ -107,22 +108,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
       totalCounters = await firebaseAuthHelper.getNoCounters(storeId);
       due =
           await firebaseFirestoreHelper.countDue(userProvider.getUser.storeId);
+      if (mounted) {
+        setState(() {
+          // Update the state to trigger a rebuild with the new data
 
-      setState(() {
-        // Update the state to trigger a rebuild with the new data
-
-        _analytics[0]['amount'] = 'Rs. $totalProfit';
-        _analytics[1]['amount'] = 'Rs. $totalSales';
-        _analytics[2]['amount'] = '$totalProductsSold';
-        _analytics[3]['amount'] = '$outOfStock';
-        _analytics[4]['amount'] = '$totalCounters';
-        _analytics[5]['amount'] = '$due';
-      });
+          _analytics[0]['amount'] = 'Rs. $totalProfit';
+          _analytics[1]['amount'] = 'Rs. $totalSales';
+          _analytics[2]['amount'] = '$totalProductsSold';
+          _analytics[3]['amount'] = '$outOfStock';
+          _analytics[4]['amount'] = '$totalCounters';
+          _analytics[5]['amount'] = '$due';
+        });
+      }
     } catch (e) {
       // Handle error
       if (context.mounted) Utils().toastor(context, e.toString());
     }
-    toggleIsFetching(false);
+    if (mounted) {
+      toggleIsFetching(false);
+    }
   }
 
   @override
@@ -133,7 +137,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void dispose() {
-    if (context.mounted) Navigator.of(context).pop();
     super.dispose();
   }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hmrodokan/components/admin_product.dart';
+import 'package:hmrodokan/components/inventory_card.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/model/product.dart';
 import 'package:hmrodokan/provider/user.dart';
@@ -92,7 +92,7 @@ class _ListOutStockState extends State<ListOutStock> {
                     child: Column(
                       children: [
                         for (ProductModel products in productsList)
-                          AdminProduct(products: products),
+                          InventoryCard(product: products),
                       ],
                     ),
                   ),

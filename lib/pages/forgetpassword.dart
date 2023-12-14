@@ -49,56 +49,51 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         foregroundColor: Colors.white,
         title: const Text("Hamro Dokan"),
       ),
-      body: WillPopScope(
-        onWillPop: () {
-          return Future.value(false);
-        },
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => emailController.text = value!,
-                ),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: _validateAndSubmit,
-                  child: const Text('Submit'),
-                ),
-                const SizedBox(height: 16.0),
-                Center(
-                  child: GestureDetector(
-                    onTap: _navigateToSignIn,
-                    child: RichText(
-                      text: const TextSpan(
-                        text: 'Have an account? ',
-                        style: TextStyle(color: Colors.black),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Sign In',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
+      body: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+                onSaved: (value) => emailController.text = value!,
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _validateAndSubmit,
+                child: const Text('Submit'),
+              ),
+              const SizedBox(height: 16.0),
+              Center(
+                child: GestureDetector(
+                  onTap: _navigateToSignIn,
+                  child: RichText(
+                    text: const TextSpan(
+                      text: 'Have an account? ',
+                      style: TextStyle(color: Colors.black),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Sign In',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

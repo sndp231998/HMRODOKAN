@@ -18,9 +18,10 @@ class _HistoryState extends State<History> {
       FirebaseFirestoreHelper();
 
   bool isLoading = true;
+  bool isMoreLoading = false;
 
   List<BillModel> billList = [];
-  late final ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
 
   Future<void> listBill(BuildContext context) async {
     UserProvider userProvider =
@@ -47,10 +48,18 @@ class _HistoryState extends State<History> {
     });
   }
 
-  void handleScroll() {
+  void toggleMoreLoading(bool value) {
+    setState(() {
+      isMoreLoading = value;
+    });
+  }
+
+  void handleScroll() async {
+    toggleMoreLoading(true);
     if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-      listBill(context);
+      await listBill(context);
     }
+    toggleMoreLoading(false);
   }
 
   @override
@@ -90,35 +99,46 @@ class _HistoryState extends State<History> {
               scrollDirection: Axis.vertical,
               child: SizedBox(
                 height: MediaQuery.of(context).size.height,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('Sales ID')),
-                      DataColumn(label: Text('Date')),
-                      DataColumn(label: Text('Payment')),
-                      DataColumn(label: Text('Total')),
-                      DataColumn(label: Text('Paid')),
-                      DataColumn(label: Text('Action')),
-                    ],
-                    rows: [
-                      for (BillModel bill in billList)
-                        DataRow(cells: [
-                          DataCell(Text(bill.uid)),
-                          DataCell(Text(bill.issueDate.toString())),
-                          DataCell(Text(bill.paymentMethod)),
-                          DataCell(Text('Rs. ${bill.totalAmount.toString()}')),
-                          DataCell(Text('Rs. ${bill.paidAmount.toString()}')),
-                          DataCell(TextButton(
-                            child: const Text('View'),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => Invoice(bill: bill)));
-                            },
-                          )),
-                        ])
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: const [
+                          // DataColumn(label: Text('Sales ID')),
+                          DataColumn(label: Text('Date')),
+                          DataColumn(label: Text('Payment')),
+                          DataColumn(label: Text('Total')),
+                          DataColumn(label: Text('Paid')),
+                          DataColumn(label: Text('Action')),
+                        ],
+                        rows: [
+                          for (BillModel bill in billList)
+                            DataRow(cells: [
+                              // DataCell(Text(bill.uid)),
+                              DataCell(Text(bill.issueDate.toString())),
+                              DataCell(Text(bill.paymentMethod)),
+                              DataCell(
+                                  Text('Rs. ${bill.totalAmount.toString()}')),
+                              DataCell(
+                                  Text('Rs. ${bill.paidAmount.toString()}')),
+                              DataCell(TextButton(
+                                child: const Text('View'),
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          Invoice(bill: bill)));
+                                },
+                              )),
+                            ])
+                        ],
+                      ),
+                    ),
+                    if (isMoreLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                  ],
                 ),
               ),
             ),

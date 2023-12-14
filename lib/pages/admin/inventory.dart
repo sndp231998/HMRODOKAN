@@ -20,7 +20,20 @@ class _InventoryPageState extends State<InventoryPage> {
   late final ScrollController _controller = ScrollController();
 
   bool isLoading = true;
+  bool isMoreLoading = false;
   List<ProductModel> productsList = [];
+
+  void toggleMoreLoading(bool value) {
+    setState(() {
+      isMoreLoading = value;
+    });
+  }
+
+  void toggleLoading(bool value) {
+    setState(() {
+      isLoading = value;
+    });
+  }
 
   Future<void> listProducts(
       BuildContext context, ProductModel? lastProduct) async {
@@ -29,11 +42,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
-    if (!isLoading) {
-      setState(() {
-        isLoading = true;
-      });
-    }
+
     try {
       List<ProductModel> fetchList = [];
       fetchList = await firebaseFirestoreHelper.listProducts(
@@ -50,14 +59,14 @@ class _InventoryPageState extends State<InventoryPage> {
     } catch (e) {
       if (context.mounted) Utils().toastor(context, e.toString());
     }
-    setState(() {
-      isLoading = false;
-    });
+    toggleLoading(false);
+    toggleMoreLoading(false);
   }
 
   void handleScroll() {
-    if (isLoading) return;
-    if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+    if (!isMoreLoading &&
+        _controller.position.pixels == _controller.position.maxScrollExtent) {
+      toggleMoreLoading(true);
       listProducts(context, productsList[productsList.length - 1]);
     }
   }
@@ -95,6 +104,10 @@ class _InventoryPageState extends State<InventoryPage> {
                 children: [
                   for (ProductModel products in productsList)
                     AdminProduct(products: products),
+                  if (isMoreLoading)
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    ),
                 ],
               ),
             ),
