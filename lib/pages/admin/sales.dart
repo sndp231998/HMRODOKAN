@@ -135,6 +135,7 @@ class _SalesState extends State<Sales> {
       );
     }
     return SingleChildScrollView(
+      controller: _controller,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
