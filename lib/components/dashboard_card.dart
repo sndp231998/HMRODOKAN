@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeletons/skeletons.dart';
 
 class DashboardCard extends StatelessWidget {
   final Icon icon;
@@ -42,7 +43,7 @@ class DashboardCard extends StatelessWidget {
                     color: Colors.green[500],
                     fontSize: 20,
                   ),
-                )
+                ),
               ],
             )
           ],
