@@ -50,6 +50,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        dialogBackgroundColor: const Color.fromARGB(245, 255, 255, 255),
         scaffoldBackgroundColor: const Color.fromARGB(245, 255, 255, 255),
       ),
       home: const AuthService(),

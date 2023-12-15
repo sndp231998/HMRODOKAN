@@ -280,7 +280,7 @@ class _CreateBillState extends State<CreateBill> {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        isDismissible: true,
+        // isDismissible: true,
         builder: (context) {
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,

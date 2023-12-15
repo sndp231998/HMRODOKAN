@@ -5,6 +5,7 @@ import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletons/skeletons.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -91,10 +92,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     late int totalCounters;
     late double totalProfit;
     late int due;
+
+    // Store the context before entering the asynchronous block
+    BuildContext currentContext = context;
     try {
       // Get the user parameter from the provider
       UserProvider userProvider =
-          Provider.of<UserProvider>(context, listen: false);
+          Provider.of<UserProvider>(currentContext, listen: false);
       String storeId =
           userProvider.getUser.storeId; // Adjust this based on your user model
 
@@ -122,7 +126,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
     } catch (e) {
       // Handle error
-      if (context.mounted) Utils().toastor(context, e.toString());
+      if (currentContext.mounted) Utils().toastor(currentContext, e.toString());
     }
     if (mounted) {
       toggleIsFetching(false);
@@ -146,9 +150,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       crossAxisCount: 2,
       children: List.generate(_analytics.length, (index) {
         if (isFetching) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return SkeletonListView();
         }
         return DashboardCard(
           icon: _analytics[index]['icon'],

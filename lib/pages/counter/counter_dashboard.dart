@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_auth.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
@@ -27,23 +25,27 @@ class _CounterDashboardState extends State<CounterDashboard> {
   bool isLoading = false;
   int outOfStock = 0;
   StoreModel? store;
-  late Completer<void> _fetchDetailsCompleter;
 
   void toggleIsLoading(bool value) {
-    setState(() {
-      isLoading = value;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = value;
+      });
+    }
   }
 
   Future<void> fetchDetails() async {
     if (!mounted) {
       return; // Check if the widget is still active
     }
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
+
     toggleIsLoading(true);
 
+    BuildContext currentContext = context;
+
     try {
+      UserProvider userProvider =
+          Provider.of<UserProvider>(currentContext, listen: false);
       int outStock = await firebaseFirestoreHelper
           .getOutOfStock(userProvider.getUser.storeId);
       int count =
@@ -60,19 +62,17 @@ class _CounterDashboardState extends State<CounterDashboard> {
         });
       }
     } catch (e) {
-      if (context.mounted) Utils().toastor(context, e.toString());
-    }
-    if (mounted) {
-      // Check if the widget is still active before completing the operation
-      toggleIsLoading(false);
-      _fetchDetailsCompleter.complete();
+      if (currentContext.mounted) Utils().toastor(currentContext, e.toString());
+    } finally {
+      if (mounted) {
+        // Check if the widget is still active before completing the operation
+        toggleIsLoading(false);
+      }
     }
   }
 
   @override
   void initState() {
-    _fetchDetailsCompleter = Completer<void>();
-
     fetchDetails();
 
     super.initState();
@@ -80,10 +80,6 @@ class _CounterDashboardState extends State<CounterDashboard> {
 
   @override
   void dispose() {
-    // Cancel the asynchronous operation if it's still ongoing
-    if (!_fetchDetailsCompleter.isCompleted) {
-      _fetchDetailsCompleter.completeError('Disposed');
-    }
     super.dispose();
   }
 

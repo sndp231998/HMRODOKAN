@@ -19,4 +19,19 @@ class UserProvider extends ChangeNotifier {
 
   // getter
   UserModel get getUser => _user;
+
+  // clear user
+  void clearUser() {
+    _user = UserModel(
+        uid: '',
+        fullname: '',
+        email: '',
+        address: '',
+        phonenumber: '',
+        role: '',
+        username: '',
+        storeId: '');
+
+    notifyListeners();
+  }
 }

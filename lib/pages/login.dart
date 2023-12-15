@@ -33,25 +33,28 @@ class _LoginState extends State<Login> {
   }
 
   void _login(UserProvider userProvider) async {
-    if (!mounted) return;
     String email = usernameController.text;
     String password = passwordController.text;
 
     if (email == '' || password == '') {
       return Utils().toastor(context, 'Some fields are empty');
     }
+    // Store the context before entering the asynchronous block
+    BuildContext currentContext = context;
     try {
       await authHelper.loginUser(email, password);
-      if (mounted) await getCurrentUserDetails(userProvider);
-      if (context.mounted) Utils().toastor(context, 'Successfully Logged In');
+      await getCurrentUserDetails(userProvider);
+      if (currentContext.mounted) {
+        Utils().toastor(context, 'Successfully Logged In');
+      }
     } catch (e) {
-      if (context.mounted) Utils().toastor(context, e.toString());
+      if (currentContext.mounted) Utils().toastor(context, e.toString());
     }
   }
 
   Future<void> getCurrentUserDetails(UserProvider userProvider) async {
     UserModel? user = await authHelper.getUserInstance();
-
+    // if (!mounted) return;
     if (user != null) {
       userProvider.setUser = user;
     }

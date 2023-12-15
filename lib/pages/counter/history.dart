@@ -97,8 +97,9 @@ class _HistoryState extends State<History> {
           : SingleChildScrollView(
               controller: _controller,
               scrollDirection: Axis.vertical,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
+              child: Container(
+                padding: const EdgeInsets.only(bottom: 5),
+                // height: MediaQuery.of(context).size.height,
                 child: Column(
                   children: [
                     SingleChildScrollView(

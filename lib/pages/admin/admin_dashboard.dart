@@ -37,10 +37,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
   StoreModel? store;
 
   Future<void> fetchStoreDetails() async {
-    if (!mounted) return;
+    BuildContext scaffoldContext = context;
     try {
       UserProvider userProvider =
-          Provider.of<UserProvider>(context, listen: false);
+          Provider.of<UserProvider>(scaffoldContext, listen: false);
       StoreModel? storeInfo =
           await authHelper.getStoreInfo(userProvider.getUser.storeId);
       if (mounted) {
@@ -49,13 +49,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
         });
       }
     } catch (e) {
-      if (context.mounted) Utils().toastor(context, e.toString());
+      if (scaffoldContext.mounted) {
+        Utils().toastor(scaffoldContext, e.toString());
+      }
     }
+  }
+
+  Future<void> _initState() async {
+    await fetchStoreDetails();
   }
 
   @override
   void initState() {
-    fetchStoreDetails();
+    _initState();
     super.initState();
   }
 
