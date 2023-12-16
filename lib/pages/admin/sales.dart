@@ -82,15 +82,15 @@ class _SalesState extends State<Sales> {
     });
   }
 
-  void listTab() {
+  void listTab() async {
     setState(() {
       isLoading = true;
     });
     if (currentTab == 'counter') {
-      listBill(context);
+      await listBill(context);
     }
     if (currentTab == 'product') {
-      listSales(context);
+      if (context.mounted) await listSales(context);
     }
   }
 

@@ -105,7 +105,8 @@ class _UserState extends State<User> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               controller: _controller,
-              child: Padding(
+              child: Container(
+                height: MediaQuery.of(context).size.height,
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [

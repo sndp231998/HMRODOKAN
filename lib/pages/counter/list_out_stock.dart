@@ -34,19 +34,23 @@ class _ListOutStockState extends State<ListOutStock> {
       List<ProductModel> fetchList = [];
       fetchList = await firebaseFirestoreHelper.listOutOfStock(
           userProvider.getUser.storeId, lastProduct);
-      setState(() {
-        if (lastProduct != null) {
-          productsList.addAll(fetchList);
-        } else {
-          productsList = fetchList;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (lastProduct != null) {
+            productsList.addAll(fetchList);
+          } else {
+            productsList = fetchList;
+          }
+        });
+      }
     } catch (e) {
       if (context.mounted) Utils().toastor(context, e.toString());
     }
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void handleScroll() {
