@@ -49,23 +49,15 @@ dependencies:
   uuid: ^4.2.1
   intl: ^0.18.1
   skeletons: ^0.0.3
+  flutter_native_splash: ^2.3.8
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   
   flutter_launcher_icons: "^0.13.1"
-
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
 
 # Section for flutter launcher icon
 flutter_launcher_icons:
@@ -119,5 +111,19 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
+# Splash Screen
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/icons/icon.png
+  branding: assets/icons/icon.png
+  color_dark: "#121212"
+  image_dark: assets/icons/icon.png
+  branding_dark: assets/icons/icon.png
+
+  android_12:
+    image: assets/icons/icon.png
+    icon_background_color: "#ffffff"
+    image_dark: assets/icons/icon.png
+    icon_background_color_dark: "#121212"
+
+  web: false

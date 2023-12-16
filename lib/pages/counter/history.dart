@@ -34,18 +34,15 @@ class _HistoryState extends State<History> {
       bills = await firebaseFirestoreHelper.listBill(
           userProvider.getUser.uid, lastBill);
       setState(() {
-        if (lastBill == null) {
-          billList = bills;
-        } else {
-          billList.addAll(bills);
-        }
+        lastBill == null ? billList = bills : billList.addAll(bills);
       });
     } catch (e) {
       if (context.mounted) return Utils().toastor(context, e.toString());
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
-    setState(() {
-      isLoading = false;
-    });
   }
 
   void toggleMoreLoading(bool value) {

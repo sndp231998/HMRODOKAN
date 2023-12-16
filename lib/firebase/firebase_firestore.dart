@@ -215,7 +215,7 @@ class FirebaseFirestoreHelper {
       double totalProfit = 0;
 
       for (var doc in querySnapshot.docs) {
-        double totalBill = doc['totalAmount'] ?? 0;
+        double totalBill = double.parse(doc['totalAmount'].toString()) ?? 0;
         totalSales += totalBill;
 
         var salesSnapshot = await _firebaseFirestore
@@ -225,7 +225,8 @@ class FirebaseFirestoreHelper {
 
         for (var salesDoc in salesSnapshot.docs) {
           totalProductsSold += 1;
-          totalProfit += salesDoc['soldAt'] - salesDoc['purchaseAt'];
+          totalProfit += double.parse(salesDoc['soldAt'].toString()) -
+              double.parse(salesDoc['purchaseAt'].toString());
         }
       }
 
@@ -409,11 +410,14 @@ class FirebaseFirestoreHelper {
       await queryRef.limit(20).get().then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           String uid = docSnapshot.get('uid');
-          double totalAmount = docSnapshot.get('totalAmount');
+          double totalAmount =
+              double.parse(docSnapshot.get('totalAmount').toString());
           String storeId = docSnapshot.get('storeId');
           DateTime issueDate = docSnapshot.get('issueDate').toDate();
-          double discount = docSnapshot.get('discount');
-          double paidAmount = docSnapshot.get('paidAmount');
+          double discount =
+              double.parse(docSnapshot.get('discount').toString());
+          double paidAmount =
+              double.parse(docSnapshot.get('paidAmount').toString());
           String paymentMethod = docSnapshot.get('paymentMethod');
           String name = docSnapshot.get('name');
           String phonenumber = docSnapshot.get('phonenumber');
@@ -470,12 +474,15 @@ class FirebaseFirestoreHelper {
       await queryRef.limit(10).get().then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           String uid = docSnapshot.get('uid');
-          double totalAmount = docSnapshot.get('totalAmount');
+          double totalAmount =
+              double.parse(docSnapshot.get('totalAmount').toString());
           String storeId = docSnapshot.get('storeId');
           String counterId = docSnapshot.get('counterId');
           DateTime issueDate = docSnapshot.get('issueDate').toDate();
-          double discount = docSnapshot.get('discount');
-          double paidAmount = docSnapshot.get('paidAmount');
+          double discount =
+              double.parse(docSnapshot.get('discount').toString());
+          double paidAmount =
+              double.parse(docSnapshot.get('paidAmount').toString());
           String paymentMethod = docSnapshot.get('paymentMethod');
           String name = docSnapshot.get('name');
           String phonenumber = docSnapshot.get('phonenumber');
@@ -686,14 +693,15 @@ class FirebaseFirestoreHelper {
     await queryRef.limit(10).get().then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {
         String uid = docSnapshot.get('uid');
-        double soldAt = docSnapshot.get('soldAt');
+        double soldAt = double.parse(docSnapshot.get('soldAt').toString());
         String billId = docSnapshot.get('billId');
         String productId = docSnapshot.get('productId');
         String name = docSnapshot.get('name');
         String storeId = docSnapshot.get('storeId');
         double quantity = double.parse(docSnapshot.get('quantity').toString());
-        double discount = docSnapshot.get('discount');
-        double purchaseAt = docSnapshot.get('purchaseAt');
+        double discount = double.parse(docSnapshot.get('discount').toString());
+        double purchaseAt =
+            double.parse(docSnapshot.get('purchaseAt').toString());
 
         SalesModel newSales = SalesModel(
             uid: uid,

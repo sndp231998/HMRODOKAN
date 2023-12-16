@@ -110,7 +110,8 @@ class _DueState extends State<Due> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 controller: _controller,
-                child: Padding(
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                   child: SingleChildScrollView(
@@ -395,10 +396,6 @@ class _DueState extends State<Due> {
                                     if (context.mounted) {
                                       Utils().toastor(
                                           context, 'Due Payment Successful');
-
-                                      // Delay for a short duration before showing the completion modal
-                                      await Future.delayed(
-                                          const Duration(seconds: 2));
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
@@ -406,13 +403,6 @@ class _DueState extends State<Due> {
                                     }
                                   }
 
-                                  setState(
-                                    () {
-                                      // isLoading = false;
-                                      // paidAmount = 0;
-                                      // refundAmount = 0;
-                                    },
-                                  );
                                   if (context.mounted) {
                                     Navigator.of(context).pop();
                                   }
