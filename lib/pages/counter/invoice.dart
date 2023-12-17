@@ -202,30 +202,32 @@ class _InvoiceState extends State<Invoice> {
                                   ),
                                 ],
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Total Due Amount:',
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'Rs. ${widget.bill.totalAmount - widget.bill.paidAmount}',
-                                        style: const TextStyle(),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                              if (widget.bill.isDue)
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Total Due Amount:',
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'Rs. ${widget.bill.totalAmount - widget.bill.paidAmount}',
+                                          style: const TextStyle(),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                             ],
                           ),
                         ),

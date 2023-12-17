@@ -213,9 +213,16 @@ class FirebaseFirestoreHelper {
       int totalProductsSold = 0;
       double totalSales = 0;
       double totalProfit = 0;
+      double dueAmount = 0;
 
       for (var doc in querySnapshot.docs) {
-        double totalBill = double.parse(doc['totalAmount'].toString()) ?? 0;
+        if (doc['isDue']) {
+          totalSales += double.parse(doc['paidAmount'].toString());
+          dueAmount += double.parse(doc['totalAmount'].toString()) -
+              double.parse(doc['paidAmount'].toString());
+          continue;
+        }
+        double totalBill = double.parse(doc['totalAmount'].toString());
         totalSales += totalBill;
 
         var salesSnapshot = await _firebaseFirestore
@@ -233,7 +240,8 @@ class FirebaseFirestoreHelper {
       return {
         'totalProductsSold': totalProductsSold,
         'totalSales': totalSales,
-        'totalProfit': totalProfit
+        'totalProfit': totalProfit,
+        'dueAmount': dueAmount
       };
     } catch (e) {
       throw Exception(e);
@@ -392,7 +400,8 @@ class FirebaseFirestoreHelper {
     if (lastBill == null) {
       queryRef = _firebaseFirestore
           .collection('bills')
-          .where('counterId', isEqualTo: counterId);
+          .where('counterId', isEqualTo: counterId)
+          .orderBy('issueDate', descending: true);
     } else {
       var lastBillRef =
           await _firebaseFirestore.collection('bills').doc(lastBill.uid).get();
@@ -400,6 +409,7 @@ class FirebaseFirestoreHelper {
         queryRef = _firebaseFirestore
             .collection('bills')
             .where('counterId', isEqualTo: counterId)
+            .orderBy('issueDate', descending: true)
             .startAfterDocument(lastBillRef);
       } else {
         throw Exception('No more data to load');

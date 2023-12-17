@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/firebase/firebase_storage.dart';
 import 'package:hmrodokan/model/category.dart';
+import 'package:hmrodokan/pages/admin/filtered_product.dart';
 import 'package:hmrodokan/provider/admin.dart';
-import 'package:hmrodokan/provider/products.dart';
 import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/services/image_helper.dart';
 import 'package:hmrodokan/utils.dart';
@@ -82,18 +82,16 @@ class _CategoryCardState extends State<CategoryCard> {
 
   @override
   Widget build(BuildContext context) {
-    ProductsProvider productsProvider =
-        Provider.of<ProductsProvider>(context, listen: false);
-    AdminProvider adminProvider =
-        Provider.of<AdminProvider>(context, listen: false);
-
+    bool validURL = Uri.parse(widget.category.imageUrl).isAbsolute;
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
+
     return GestureDetector(
       onTap: () {
-        productsProvider.setFilterValue = widget.category.uid;
         // next route to product listing
-        adminProvider.setCurrentIndex = 2;
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                FilteredProduct(filterValue: widget.category.uid)));
       },
       child: Container(
         // width: 200,
@@ -118,11 +116,17 @@ class _CategoryCardState extends State<CategoryCard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(
-                      widget.category.imageUrl,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
+                    if (validURL)
+                      Image.network(
+                        widget.category.imageUrl,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    if (!validURL)
+                      Image.asset(
+                        'assets/icons/icon.png',
+                        height: 100,
+                      ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -166,10 +170,14 @@ class _CategoryCardState extends State<CategoryCard> {
                                       ),
                                       Stack(
                                         children: [
-                                          if (widget
-                                              .category.imageUrl.isNotEmpty)
+                                          if (validURL)
                                             Image.network(
                                               widget.category.imageUrl,
+                                              width: 80,
+                                            ),
+                                          if (!validURL)
+                                            Image.asset(
+                                              'assets/icons/icon.png',
                                               width: 80,
                                             ),
                                           Positioned(

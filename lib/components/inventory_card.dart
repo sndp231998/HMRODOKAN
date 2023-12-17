@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hmrodokan/components/image_widget.dart';
 import 'package:hmrodokan/model/product.dart';
 
 class InventoryCard extends StatelessWidget {
@@ -7,6 +8,8 @@ class InventoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool validURL = Uri.tryParse(product.imageUrl)?.isAbsolute ?? false;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         vertical: 10.0,
@@ -21,11 +24,7 @@ class InventoryCard extends StatelessWidget {
         children: [
           // image
           Center(
-            child: Image.network(
-              product.imageUrl,
-              height: 50,
-              width: 30,
-            ),
+            child: ImageWidget(imageUrl: product.imageUrl, validURL: validURL),
           ),
           // name & price
           const SizedBox(

@@ -22,6 +22,8 @@ class AdminProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool validURL = Uri.parse(products.imageUrl).isAbsolute;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
       decoration: const BoxDecoration(
@@ -33,10 +35,16 @@ class AdminProduct extends StatelessWidget {
       child: Row(
         children: [
           // image
-          Image.network(
-            products.imageUrl,
-            width: 80,
-          ),
+          if (validURL)
+            Image.network(
+              products.imageUrl,
+              width: 80,
+            ),
+          if (!validURL)
+            Image.asset(
+              'assets/icons/icon.png',
+              width: 80,
+            ),
 
           const SizedBox(
             width: 10,

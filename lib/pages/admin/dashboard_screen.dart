@@ -41,6 +41,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     },
     {
       'icon': Icon(
+        Icons.money_off,
+        size: 50,
+        color: Colors.green[800],
+      ),
+      'title': 'Due Amount',
+      'amount': 'Rs. 22110',
+    },
+    {
+      'icon': Icon(
         Icons.inventory,
         size: 50,
         color: Colors.green[800],
@@ -92,6 +101,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     late int totalCounters;
     late double totalProfit;
     late int due;
+    late double dueAmount;
 
     // Store the context before entering the asynchronous block
     BuildContext currentContext = context;
@@ -108,6 +118,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       totalProfit = salesWithProducts['totalProfit']!;
       totalSales = salesWithProducts['totalSales']!;
       totalProductsSold = salesWithProducts['totalProductsSold']!;
+      dueAmount = salesWithProducts['dueAmount']!;
       outOfStock = await firebaseFirestoreHelper.getOutOfStock(storeId);
       totalCounters = await firebaseAuthHelper.getNoCounters(storeId);
       due =
@@ -118,10 +129,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           _analytics[0]['amount'] = 'Rs. $totalProfit';
           _analytics[1]['amount'] = 'Rs. $totalSales';
-          _analytics[2]['amount'] = '$totalProductsSold';
-          _analytics[3]['amount'] = '$outOfStock';
-          _analytics[4]['amount'] = '$totalCounters';
-          _analytics[5]['amount'] = '$due';
+          _analytics[2]['amount'] = 'Rs. $dueAmount';
+          _analytics[3]['amount'] = '$totalProductsSold';
+          _analytics[4]['amount'] = '$outOfStock';
+          _analytics[5]['amount'] = '$totalCounters';
+          _analytics[6]['amount'] = '$due';
         });
       }
     } catch (e) {

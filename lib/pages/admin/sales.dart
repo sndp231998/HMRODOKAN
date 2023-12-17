@@ -69,23 +69,32 @@ class _SalesState extends State<Sales> {
     try {
       bills = await firebaseFirestoreHelper.listBillByStore(
           userProvider.getUser.storeId, lastBill);
+      if (!mounted) return;
       if (lastBill == null) {
-        billList = bills;
+        setState(() {
+          billList = bills;
+        });
       } else {
-        billList.addAll(bills);
+        setState(() {
+          billList.addAll(bills);
+        });
       }
     } catch (e) {
       if (context.mounted) return Utils().toastor(context, e.toString());
     }
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void listTab() async {
-    setState(() {
-      isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
     if (currentTab == 'counter') {
       await listBill(context);
     }
