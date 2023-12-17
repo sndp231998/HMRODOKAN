@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hmrodokan/components/category_card.dart';
 import 'package:hmrodokan/firebase/firebase_firestore.dart';
 import 'package:hmrodokan/model/category.dart';
-import 'package:hmrodokan/provider/products.dart';
 import 'package:hmrodokan/utils.dart';
-import 'package:provider/provider.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
@@ -19,13 +17,6 @@ class _CategoryState extends State<Category> {
   bool isLoading = true;
   List<CategoryModel> categoryList = [];
 
-  @override
-  void initState() {
-    super.initState();
-    listCategories(context);
-    resetProductFilter();
-  }
-
   Future<void> listCategories(BuildContext context) async {
     if (!isLoading) {
       setState(() {
@@ -35,22 +26,25 @@ class _CategoryState extends State<Category> {
     try {
       List<CategoryModel> fetchList = [];
       fetchList = await firebaseFirestoreHelper.listCategories();
-
-      setState(() {
-        categoryList = fetchList;
-      });
+      if (mounted) {
+        setState(() {
+          categoryList = fetchList;
+        });
+      }
     } catch (e) {
       if (context.mounted) Utils().toastor(context, e.toString());
     }
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
-  void resetProductFilter() {
-    ProductsProvider productsProvider =
-        Provider.of<ProductsProvider>(context, listen: false);
-    productsProvider.setFilterValue = '';
+  @override
+  void initState() {
+    super.initState();
+    listCategories(context);
   }
 
   @override

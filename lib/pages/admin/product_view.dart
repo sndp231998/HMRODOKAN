@@ -172,6 +172,7 @@ class _ProductViewState extends State<ProductView> {
 
   @override
   Widget build(BuildContext context) {
+    bool validUrl = Uri.parse(widget.product!.imageUrl).isAbsolute;
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -189,7 +190,16 @@ class _ProductViewState extends State<ProductView> {
             children: [
               Stack(
                 children: [
-                  Image.network(_imageUrlController.text),
+                  if (validUrl)
+                    Image.network(
+                      _imageUrlController.text,
+                      height: 100,
+                    ),
+                  if (!validUrl)
+                    Image.asset(
+                      'assets/icons/icon.png',
+                      height: 100,
+                    ),
                   if (widget.isEditing)
                     IconButton(
                         onPressed: () {

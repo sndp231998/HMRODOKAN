@@ -6,14 +6,15 @@ import 'package:hmrodokan/provider/user.dart';
 import 'package:hmrodokan/utils.dart';
 import 'package:provider/provider.dart';
 
-class InventoryPage extends StatefulWidget {
-  const InventoryPage({super.key});
+class FilteredProduct extends StatefulWidget {
+  final String filterValue;
+  const FilteredProduct({super.key, required this.filterValue});
 
   @override
-  State<InventoryPage> createState() => _InventoryPageState();
+  State<FilteredProduct> createState() => _FilteredProductState();
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class _FilteredProductState extends State<FilteredProduct> {
   FirebaseFirestoreHelper firebaseFirestoreHelper = FirebaseFirestoreHelper();
 
   late final ScrollController _controller = ScrollController();
@@ -42,7 +43,7 @@ class _InventoryPageState extends State<InventoryPage> {
     try {
       List<ProductModel> fetchList = [];
       fetchList = await firebaseFirestoreHelper.listProducts(
-          '', userProvider.getUser.storeId, lastProduct);
+          widget.filterValue, userProvider.getUser.storeId, lastProduct);
       setState(() {
         if (lastProduct != null) {
           productsList.addAll(fetchList);
@@ -86,28 +87,32 @@ class _InventoryPageState extends State<InventoryPage> {
       );
     }
 
-    return productsList.isNotEmpty
-        ? RefreshIndicator(
-            onRefresh: () {
-              return listProducts(context, null);
-            },
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              controller: _controller,
-              child: Column(
-                children: [
-                  for (ProductModel products in productsList)
-                    AdminProduct(products: products),
-                  if (isMoreLoading)
-                    const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                ],
-              ),
-            ),
-          )
-        : const Center(
-            child: Text('Add Products to view'),
-          );
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Filtered Products'),
+        ),
+        body: productsList.isNotEmpty
+            ? RefreshIndicator(
+                onRefresh: () {
+                  return listProducts(context, null);
+                },
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  controller: _controller,
+                  child: Column(
+                    children: [
+                      for (ProductModel products in productsList)
+                        AdminProduct(products: products),
+                      if (isMoreLoading)
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                    ],
+                  ),
+                ),
+              )
+            : const Center(
+                child: Text('Add Products to view'),
+              ));
   }
 }

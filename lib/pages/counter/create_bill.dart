@@ -325,6 +325,7 @@ class _CreateBillState extends State<CreateBill> {
                                       width: MediaQuery.of(context).size.width *
                                           0.6,
                                       child: TextField(
+                                        keyboardType: TextInputType.number,
                                         onChanged: (String value) {
                                           setState(() {
                                             discount = double.parse(value);
@@ -527,6 +528,7 @@ class _CreateBillState extends State<CreateBill> {
                                         discount = 0;
                                         paidAmount = 0;
                                         refundAmount = 0;
+                                        totalAmount = 0;
                                       },
                                     );
 
@@ -548,6 +550,7 @@ class _CreateBillState extends State<CreateBill> {
                                       isLoading = false;
                                       discount = 0;
                                       paidAmount = 0;
+                                      totalAmount = 0;
                                       refundAmount = 0;
                                     },
                                   );
