@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:skeletons/skeletons.dart';
 
 class DashboardCard extends StatelessWidget {
   final Icon icon;

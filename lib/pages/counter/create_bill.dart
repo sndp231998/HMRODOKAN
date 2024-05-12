@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:hmrodokan/components/bar_qr_scanner.dart';
 import 'package:hmrodokan/components/inventory_card.dart';
@@ -265,6 +267,61 @@ class _CreateBillState extends State<CreateBill> {
               ))
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        onTap: () async {
+                          String code =
+                              await BarQRScan.scanBarQrCodeNormal(ScanMode.QR);
+                          if (code.isEmpty && context.mounted) {
+                            return Utils().toastor(context,
+                                'Scanner Code not Found for the given item in db');
+                          }
+                          // query to db and add to provider
+                          ProductModel? prod = await firebaseFirestoreHelper
+                              .searchByScanner(code);
+                          if (prod == null && context.mounted) {
+                            return Utils().toastor(context,
+                                'Product Not Found in db for given code');
+                          }
+                          // add to provider
+                          billProvider.addProduct(prod!);
+                        },
+                        leading: const Icon(Icons.qr_code),
+                        title: const Text('Scan QR Code'),
+                      ),
+                      ListTile(
+                        onTap: () async {
+                          String code = await BarQRScan.scanBarQrCodeNormal(
+                              ScanMode.BARCODE);
+                          if (code.isEmpty && context.mounted) {
+                            return Utils().toastor(context,
+                                'Scanner Code not Found for the given item in db');
+                          }
+                          // query to db and add to provider
+                          ProductModel? prod = await firebaseFirestoreHelper
+                              .searchByScanner(code);
+                          if (prod == null && context.mounted) {
+                            return Utils().toastor(context,
+                                'Product Not Found in db for given code');
+                          }
+                          // add to provider
+                          billProvider.addProduct(prod!);
+                        },
+                        leading: const Icon(Icons.barcode_reader),
+                        title: const Text('Scan Bar Code'),
+                      ),
+                    ],
+                  );
+                });
+          },
+          child: const Icon(Icons.qr_code_2)),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
